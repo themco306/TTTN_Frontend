@@ -9,35 +9,58 @@
       name="description"
       content="Web site created using create-react-app"
     />
+    
     <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <!--
-      manifest.json provides metadata used when your web app is installed on a
-      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
-    -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
 
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
+    <!-- Thêm mã script -->
+    <script>
+      var WebFontConfig = {
+        google: {
+          families: ['Open+Sans:300,400,600,700,800', 'Poppins:300,400,500,600,700,800', 'Oswald:300,400,500,600,700,800']
+        }
+      };
+      (function(d) {
+        var wf = d.createElement('script'),
+            s = d.scripts[0];
+        wf.src = '%PUBLIC_URL%/assets/js/webfont.js';
+        wf.async = true;
+        s.parentNode.insertBefore(wf, s);
+      })(document);
+    </script>
+
+    <!-- Liên kết CSS -->
+    <link rel="stylesheet" href="%PUBLIC_URL%/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="%PUBLIC_URL%/assets/css/demo4.min.css">
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/assets/vendor/fontawesome-free/css/all.min.css">
+
+
+    <!--All Product-->
+    <link rel="stylesheet" href="%PUBLIC_URL%/assets/css/style.min.css">
+    <!--All Producteeeeeeee-->
+
+    <!--Contact-->
+    <link rel="stylesheet" type="text/css" href="%PUBLIC_URL%/assets/vendor/simple-line-icons/css/simple-line-icons.min.css">
+    <!--Contacteeeeeeeeeeee-->
+    
     <title>React App</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
 
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
+    <script data-cfasync="false" src="%PUBLIC_URL%/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="%PUBLIC_URL%/assets/js/jquery.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/js/optional/isotope.pkgd.min.js"></script>
+    <script src="%PUBLIC_URL%/assets/js/plugins.min.js"></script>
 
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
+    <!--All Product-->
+    <script src="%PUBLIC_URL%/assets/js/nouislider.min.js"></script>
+    <!--All Producteeeeeee-->
+
+    <script src="%PUBLIC_URL%/assets/js/jquery.appear.min.js"></script>
+
+    <!-- Main JS File -->
+    <script src="%PUBLIC_URL%/assets/js/main.min.js"></script>
   </body>
 </html>
