@@ -2,6 +2,7 @@
 import React, { createContext, useContext } from 'react';
 import { useDispatch } from 'react-redux';
 import { authActions } from '../state/actions/authActions';
+import { cartActions } from '../state/actions/cartActions';
 
 const AuthContext = createContext(
 
@@ -24,6 +25,7 @@ export const useAuth = () => {
     const logoutContext = () => {
       localStorage.removeItem('tokenCustomer');
       localStorage.removeItem('userCustomer');
+      dispatch(cartActions.clearCart())
       dispatch(authActions.logout());
     };
   

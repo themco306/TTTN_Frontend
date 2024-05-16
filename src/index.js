@@ -16,7 +16,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import ProtectedRouteLogin from './auth/ProtectedRouteLogin';
 import SendEmail from './pages/SendEmail';
 import ConfirmEmail from './pages/ConfirmEmail';
-import InnitData from './utils/InnitData';
+import MyAcount from './pages/myAcount/MyAcount';
+import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/primereact.min.css";
+import 'primeicons/primeicons.css';
+import ForgotPassword from './pages/ForgotPassword';
+import ChangePassword from './pages/ChangePassword';
+import Order from './pages/Order';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -41,6 +47,30 @@ const router = createBrowserRouter([
         path: "gio-hang",
         element: (
           <ProtectedRoute><Cart/></ProtectedRoute>
+        ),
+      },
+      {
+        path: "dat-hang",
+        element: (
+          <Order/>
+        ),
+      },
+      {
+        path: "tai-khoan",
+        element: (
+          <ProtectedRoute><MyAcount/></ProtectedRoute>
+        ),
+      },
+      {
+        path: "quen-mat-khau",
+        element: (
+          <ForgotPassword/>
+        ),
+      },
+      {
+        path: "xac-nhan-dat-lai-mat-khau/:email/:confirmToken",
+        element: (
+          <ChangePassword/>
         ),
       },
     ],

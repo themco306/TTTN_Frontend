@@ -33,8 +33,10 @@ function App() {
     };
     fetchUserData();
   }, []);
+
   return (
     <div className="page-wrapper">
+
         <Header/>
         <Main/>
         <a id="scroll-top" href="#top" title="Top" role="button"><i className="icon-angle-up"></i></a>

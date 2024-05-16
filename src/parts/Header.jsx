@@ -2,13 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import appUrl from "../api/appUrl";
 import webInfoApi from "../api/webInfoApi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../auth/AuthContext";
+import { userApi } from "../api/userApi";
+import { cartActions } from "../state/actions/cartActions";
+import DropdownCart from "../components/DropdownCart";
+import { Helmet } from "react-helmet";
 
 function Header() {
   const {logoutContext}=useAuth()
   const [webInfo,setWebInfo]=useState({});
+  const dispatch=useDispatch()
   const isLoggedIn=useSelector(state=>state.authReducer?.isLoggedIn)
+  const {quantity}=useSelector(state=>state.cartReducers)
     useEffect(() => {
       const fetchData = async () => {
           try {
@@ -24,12 +30,32 @@ function Header() {
       fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (isLoggedIn) {
+        try {
+          const response = await userApi.getMyCart();
+          console.log(response)
+          if (response.status === 200) {
+            dispatch(cartActions.setInitShow(response.data))
+          } 
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+    fetchUserData();
+  }, [isLoggedIn]);
 
   const handleLogout =()=>{
     logoutContext()
   }
   return (
     <header className="header">
+        <Helmet>
+        <title>Trang chủ</title>
+        <link rel="icon" href={webInfo.icon!==undefined&&(appUrl.logoURL+webInfo?.icon)} />
+      </Helmet>
       <div className="header-top">
         <div className="container">
           <div className="header-left d-none d-sm-block">
@@ -190,9 +216,12 @@ function Header() {
                 </Link>
               </h6>
             </div>
-            <a href="login.html" className="header-icon" title="login">
+            {isLoggedIn?(<Link to="tai-khoan" className="header-icon" title="Tài khoản">
               <i className="icon-user-2" />
-            </a>
+            </Link>):(<Link to="dang-nhap" className="header-icon" title="Đăng nhập">
+              <i className="icon-user-2" />
+            </Link>)}
+            
             <a href="wishlist.html" className="header-icon" title="wishlist">
               <i className="icon-wishlist-2" />
             </a>
@@ -208,137 +237,23 @@ function Header() {
                 data-display="static"
               >
                 <i className="minicart-icon" />
-                <span className="cart-count badge-circle">3</span>
+                <span className="cart-count badge-circle">{quantity<100?quantity:'99+'}</span>
               </a>
               <div className="cart-overlay" />
               <div className="dropdown-menu mobile-cart">
-                <a href="#" title="Close (Esc)" className="btn-close">
+                <a  title="Close (Esc)" className="btn-close" style={{ cursor:'pointer' }}>
                   ×
                 </a>
-                <div className="dropdownmenu-wrapper custom-scrollbar">
-                  <div className="dropdown-cart-header">GIỎ HÀNG</div>
-                  {/* End .dropdown-cart-header */}
-                  <div className="dropdown-cart-products">
-                    <div className="product">
-                      <div className="product-details">
-                        <h4 className="product-title">
-                          <a href="product.html">
-                            Ultimate 3D Bluetooth Speaker
-                          </a>
-                        </h4>
-                        <span className="cart-product-info">
-                          <span className="cart-product-qty">1</span> × $99.00
-                        </span>
-                      </div>
-                      {/* End .product-details */}
-                      <figure className="product-image-container">
-                        <a href="product.html" className="product-image">
-                          <img
-                            src="/assets/images/products/product-1.jpg"
-                            alt="product"
-                            width={80}
-                            height={80}
-                          />
-                        </a>
-                        <a
-                          href="#"
-                          className="btn-remove"
-                          title="Remove Product"
-                        >
-                          <span>×</span>
-                        </a>
-                      </figure>
-                    </div>
-                    {/* End .product */}
-                    <div className="product">
-                      <div className="product-details">
-                        <h4 className="product-title">
-                          <a href="product.html">Brown Women Casual HandBag</a>
-                        </h4>
-                        <span className="cart-product-info">
-                          <span className="cart-product-qty">1</span> × $35.00
-                        </span>
-                      </div>
-                      {/* End .product-details */}
-                      <figure className="product-image-container">
-                        <a href="product.html" className="product-image">
-                          <img
-                            src="/assets/images/products/product-2.jpg"
-                            alt="product"
-                            width={80}
-                            height={80}
-                          />
-                        </a>
-                        <a
-                          href="#"
-                          className="btn-remove"
-                          title="Remove Product"
-                        >
-                          <span>×</span>
-                        </a>
-                      </figure>
-                    </div>
-                    {/* End .product */}
-                    <div className="product">
-                      <div className="product-details">
-                        <h4 className="product-title">
-                          <a href="product.html">Circled Ultimate 3D Speaker</a>
-                        </h4>
-                        <span className="cart-product-info">
-                          <span className="cart-product-qty">1</span> × $35.00
-                        </span>
-                      </div>
-                      {/* End .product-details */}
-                      <figure className="product-image-container">
-                        <a href="product.html" className="product-image">
-                          <img
-                            src="/assets/images/products/product-3.jpg"
-                            alt="product"
-                            width={80}
-                            height={80}
-                          />
-                        </a>
-                        <a
-                          href="#"
-                          className="btn-remove"
-                          title="Remove Product"
-                        >
-                          <span>×</span>
-                        </a>
-                      </figure>
-                    </div>
-                    {/* End .product */}
-                  </div>
-                  {/* End .cart-product */}
-                  <div className="dropdown-cart-total">
-                    <span>TỔNG:</span>
-                    <span className="cart-total-price float-right">
-                      $134.00
-                    </span>
-                  </div>
-                  {/* End .dropdown-cart-total */}
-                  <div className="dropdown-cart-action">
-                    <a
-                      href="/cart"
-                      className="btn btn-gray btn-block view-cart"
-                    >
-                      Xem Thêm
-                    </a>
-                    <a href="checkout.html" className="btn btn-dark btn-block">
-                      Thanh Toán
-                    </a>
-                  </div>
-                  {/* End .dropdown-cart-total */}
-                </div>
-                {/* End .dropdownmenu-wrapper */}
+                <DropdownCart/>
+
               </div>
-              {/* End .dropdown-menu */}
+
             </div>
-            {/* End .dropdown */}
+
           </div>
-          {/* End .header-right */}
+
         </div>
-        {/* End .container */}
+  
       </div>
       {/* End .header-middle */}
       <div

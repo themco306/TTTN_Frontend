@@ -9,6 +9,26 @@ export const userApi = {
         var url = 'account/signup'
         return axiosInstance.post(url, data)
     },
+    add2Cart(data){
+        var url = 'carts'
+        return axiosInstance.post(url, data)
+    },
+    changeQuantity(id,data){
+        var url=`carts/quantity/${id}/${data}`
+        return axiosInstance.put(url,data)
+    },
+    removeFromCart(id){
+        var url='carts/'+id
+        return axiosInstance.delete(url)
+    },
+    getMyCart(){
+        var url = 'carts/my-cart'
+        return axiosInstance.get(url)
+    },
+    sendResetPasswordConfirm(data){
+        var url='account/sendResetPasswordConfirm'
+        return axiosInstance.post(url,data)
+    },
     sendEmailConfirm(id,data){
         var url='account/sendEmailConfirm/'+id
         return axiosInstance.post(url,data)
@@ -17,36 +37,13 @@ export const userApi = {
         var url='account/confirmEmail/'+id
         return axiosInstance.post(url,data)
     },
-    getAll(params){
-        var url='account'
-        return axiosInstance.get(url,{params})
+    confirmSetPassword(data){
+        var url='account/confirmSetPassword'
+        return axiosInstance.post(url,data)
     },
     get(id){
         var url='account/'+id
         return axiosInstance.get(url)
-    },
-    getRoles(){
-        var url='account/roles'
-        return axiosInstance.get(url)
-    },
-    getClaims(){
-        var url='claims'
-        return axiosInstance.get(url)
-    },
-    add(data){
-        var url='account'
-        return axiosInstance.post(url,data)
-    },
-    update(id, data) {
-        var url = 'account/' + id;
-        // Thiết lập tiêu đề 'Content-Type' là 'multipart/form-data' cho yêu cầu POST
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
-        // Gửi yêu cầu POST với tiêu đề mới được cấu hình
-        return axiosInstance.put(url, data, config);
     },
     myUpdate(id, data) {
         var url = 'account/my/' + id;
@@ -59,16 +56,5 @@ export const userApi = {
         // Gửi yêu cầu POST với tiêu đề mới được cấu hình
         return axiosInstance.put(url, data, config);
     },
-    updateStatus(id){
-        var url=`account/statusEmail/${id}`
-        return axiosInstance.put(url)
-    },
-    delete(id){
-        var url='account/'+id
-        return axiosInstance.delete(url)
-    },
-    deleteUsers(data){
-        var url='account/delete-multiple'
-        return axiosInstance.delete(url,{data})
-    }
+
 }

@@ -12,8 +12,11 @@ function useCustomException() {
                 if (res.data && res.data.errors) {
                     Object.keys(res.data.errors).forEach((key) => {
                         toast.error(res.data.errors[key][0]);
+
                     })
+                    break;
                 }
+                toast.error(res.data.error)
                 break;
             case 401:
                 toast.error(error.response.data.error);
@@ -26,6 +29,9 @@ function useCustomException() {
                     toast.warn(error.response.data.error)
                 }
                 break;
+                case 404:
+                    toast.error(error.response.data.error);
+                    break;
             default:
                 toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
                 break;

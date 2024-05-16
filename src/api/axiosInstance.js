@@ -28,6 +28,7 @@
 
 import axios from "axios";
 import appUrl from "./appUrl";
+import store from "../state/store";
 // import store from "../state/store";
 
 // Tạo một hàm để tạo ra một phiên bản mới của axios với cấu hình được truyền vào
@@ -37,8 +38,8 @@ const createAxiosInstance = (config) => {
   // Thêm interceptor vào phiên bản mới tạo
   instance.interceptors.request.use(function (config) {
     // Lấy token từ store hoặc sử dụng token mặc định
-    const token = config.defaultToken;
-    // const token = store.getState().authReducer.token || config.defaultToken;
+    // const token = config.defaultToken;
+    const token = store.getState().authReducer.token || config.defaultToken;
     config.headers.Authorization = `Bearer ${token}`;
     return config;
   });

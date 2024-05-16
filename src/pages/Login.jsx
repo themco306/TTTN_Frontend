@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAuth } from '../auth/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import useCustomException from '../utils/useCustomException';
 import { userApi } from '../api/userApi';
 import { toast } from 'react-toastify';
@@ -92,7 +92,7 @@ const handleRegister =async(userData)=>{
                 <input type="checkbox" className="custom-control-input" id="lost-password" />
                 <label className="custom-control-label mb-0" htmlFor="lost-password">Lưu đăng nhập</label>
               </div>
-              <a href="forgot-password.html" className="forget-password text-dark form-footer-right">Quên mật khẩu?</a>
+              <Link to="/quen-mat-khau" className="forget-password text-dark form-footer-right">Quên mật khẩu?</Link>
             </div>
             <button disabled={lLogin} type="submit" className="btn btn-dark btn-md w-100">
               ĐĂNG NHẬP

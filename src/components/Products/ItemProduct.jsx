@@ -1,8 +1,34 @@
 import React from 'react'
 import appUrl from '../../api/appUrl'
+import { userApi } from '../../api/userApi'
+import { useDispatch } from 'react-redux'
+import { cartActions } from '../../state/actions/cartActions'
+import useCustomException from '../../utils/useCustomException'
+import { toast } from 'react-toastify'
 
 function ItemProduct({product}) {
   console.log("ip",product)
+  const dispatch=useDispatch()
+  const handleException = useCustomException();
+  const handleAdd2Cart =async()=>{
+    try {
+      const data={
+        cartItem:{
+          productId:product.id,
+        }
+      }
+      const res= await userApi.add2Cart(data)
+      console.log(res)
+      if(res.status===200){
+        dispatch(cartActions.add2Cart(res.data.data))
+        toast.success(res.data.message)
+      }
+    } catch (error) {
+      if(error?.response){
+        handleException(error)
+      }
+    }
+  }
   return (
     <div
     className="product-default "
@@ -57,18 +83,14 @@ function ItemProduct({product}) {
       <div className="ratings-container">
         <div className="product-ratings">
           <span className="ratings" style={{ width: "80%" }} />
-          {/* End .ratings */}
           <span className="tooltiptext tooltip-top" />
         </div>
-        {/* End .product-ratings */}
       </div>
-      {/* End .product-container */}
       <div className="price-box">
        <del className="old-price">{product.comparePrice.toLocaleString()}</del>
 <span className="product-price">{product.salePrice.toLocaleString()} VND</span>
 
       </div>
-      {/* End .price-box */}
       <div className="product-action">
         <a
           href="wishlist.html"
@@ -78,8 +100,8 @@ function ItemProduct({product}) {
           <i className="icon-heart" />
         </a>
         <a
-          href="#"
-          className="btn-icon btn-add-cart product-type-simple"
+          className="btn-icon btn-add-cart "
+          onClick={handleAdd2Cart}
         >
           <i className="icon-shopping-cart" />
           <span>Thêm giỏ hàng</span>
@@ -93,7 +115,6 @@ function ItemProduct({product}) {
         </a>
       </div>
     </div>
-    {/* End .product-details */}
   </div>
   )
 }
