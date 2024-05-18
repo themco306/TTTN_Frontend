@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { orderInfoApi } from "../api/orderInfoApi";
 import useCustomException from "../utils/useCustomException";
@@ -7,18 +7,25 @@ import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { orderApi } from "../api/orderApi";
+import { toast } from "react-toastify";
+import formOrderd, { createHtmlTable } from "../utils/createHtmlTable";
+import { userApi } from "../api/userApi";
+import { cartActions } from "../state/actions/cartActions";
 
 function Order() {
   const navigate = useNavigate();
   const handleException = useCustomException();
+  const dispatch=useDispatch()
   const [orderInfoData, setOrderInfoData] = useState([]);
   const [selectedOrderInfo, setSelectedOrderInfo] = useState(null);
   const [visible, setVisible] = useState(false);
   const [note, setNote] = useState("");
+  const [paymentType,setPaymentType]=useState("CashOnDelivery")
   const [couponData, setCouponData] = useState(null);
   const [lCode, setLCode] = useState(false);
   const [code, setCode] = useState("");
   const { cartsToOrder } = useSelector((state) => state.cartReducers);
+  const [lSOrder,setLSOrDer]=useState(false);
   const [total, setTotal] = useState(0);
   const [finalTotal, setFinalTotal] = useState(0);
 
@@ -33,6 +40,9 @@ function Order() {
         <Button label="Thoát" icon="pi pi-times" onClick={() => setVisible(false)} autoFocus />
     </div>
 );
+const handlePaymentChange = (event) => {
+  setPaymentType(event.target.value);
+};
   useEffect(() => {
     const fecth = async () => {
       try {
@@ -47,6 +57,11 @@ function Order() {
     };
     fecth();
   }, []);
+  useEffect(() => {
+    if(couponData!==null){
+      setCouponData(null)
+    }
+  }, [code]);
   useEffect(() => {
     // Tính toán tổng số lượng từ cartsOrder
     const newTotal = cartsToOrder.reduce(
@@ -88,6 +103,72 @@ function Order() {
       setLCode(false);
     }
   };
+const handleRemoveFromCart = async () => {
+  try {
+    const promises = cartsToOrder.map(async (item) => {
+      const response = await userApi.removeFromCart(item.id);
+      console.log(response);
+      if (response.status === 200) {
+        dispatch(cartActions.removeFromCart(item.id));
+      }
+    });
+
+    await Promise.all(promises);
+  } catch (error) {
+    if (error?.response) {
+      handleException(error);
+    }
+  }
+};
+
+  const handleSendOrderConfirmEmail=async(id)=>{
+    console.log(id)
+    try {
+      const currentHost = window.location.origin;
+      const response = await orderApi.sendOrderConfirmEmail(id, currentHost + "/xac-nhan-don-hang")
+      console.log(response)
+      return
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  const handleSubmitOrder =async()=>{
+    try {
+      if(selectedOrderInfo===null){
+        toast.error("Vui lòng chọn địa chỉ giao hàng");
+        return
+      }
+      setLSOrDer(true)
+    
+      const data={
+        orderInfoId:selectedOrderInfo.id,
+        code:code,
+        note:note,
+        paymentType:paymentType,
+        orderDetails: cartsToOrder.map((item) => ({
+          cartId:item.id,
+          productId: item.product.id,
+          quantity: item.quantity,
+        }))
+      }
+      const response =await orderApi.createOrder(data)
+      console.log(response)
+      if(response.status===200){
+        handleSendOrderConfirmEmail(response.data.data.id)
+        handleRemoveFromCart()
+        dispatch(cartActions.clearCart2Order)
+        toast.success(response.data.message)
+        
+        setLSOrDer(false)
+        navigate(`/dat-hang-thanh-cong/${response.data.data.code}`)
+      }
+    } catch (error) {
+      if(error?.response){
+        handleException(error)
+      }
+      setLSOrDer(false)
+    }
+  }
   return (
     <div className="container checkout-container">
       <ul className="checkout-progress-bar d-flex justify-content-center flex-wrap">
@@ -308,12 +389,14 @@ function Order() {
                     <h4 className="m-b-sm">Thanh toán</h4>
                     <div className="form-group form-group-custom-control">
                       <div className="custom-control custom-radio d-flex">
-                        <input
-                          type="radio"
-                          className="custom-control-input"
-                          name="radio"
-                          defaultChecked
-                        />
+                      <input
+            type="radio"
+            className="custom-control-input"
+            name="radio"
+            value="CashOnDelivery"
+            checked={paymentType === 'CashOnDelivery'}
+            onChange={handlePaymentChange}
+          />
                         <label className="custom-control-label">
                           Thanh toán khi nhận hàng
                         </label>
@@ -323,11 +406,14 @@ function Order() {
                     {/* End .form-group */}
                     <div className="form-group form-group-custom-control mb-0">
                       <div className="custom-control custom-radio d-flex mb-0">
-                        <input
-                          type="radio"
-                          name="radio"
-                          className="custom-control-input"
-                        />
+                      <input
+            type="radio"
+            name="radio"
+            className="custom-control-input"
+            value="OnlinePayment"
+            checked={paymentType === 'OnlinePayment'}
+            onChange={handlePaymentChange}
+          />
                         <label className="custom-control-label">
                           Thanh toán trực tuyến
                         </label>
@@ -349,13 +435,13 @@ function Order() {
                 </tr>
               </tfoot>
             </table>
-            <button
-              type="submit"
+            <Button
               className="btn btn-dark btn-place-order"
-              form="checkout-form"
+              onClick={handleSubmitOrder}
+              loading={lSOrder}
             >
               Đặt hàng
-            </button>
+            </Button>
           </div>
           {/* End .cart-summary */}
         </div>

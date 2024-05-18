@@ -6,6 +6,7 @@ export const CartActionTypes = {
  SET_INIT:'SET_INIT',
  CHANGE_QUANTITY: "CHANGE_QUANTITY",
   SET_CART_TO_ORDER:"SET_CART_TO_ORDER",
+  CLEAR_CART_TO_ORDER:"CLEAR_CART_TO_ORDER",
  REMOVE_FROM_CART: "REMOVE_FROM_CART",
  CLEAR_CART:"CLEAR_CART"
 }
@@ -32,6 +33,9 @@ export const cartActions = {
   }),
   clearCart:()=>({
     type:CartActionTypes.CLEAR_CART
+  }),
+  clearCart2Order:()=>({
+    type:CartActionTypes.CLEAR_CART_TO_ORDER
   })
 
 };

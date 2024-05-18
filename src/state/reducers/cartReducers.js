@@ -59,6 +59,8 @@ const cartReducers = (state = initialState, action) => {
             };
           case CartActionTypes.SET_CART_TO_ORDER:
             return {...state,cartsToOrder:action.payload}
+            case CartActionTypes.CLEAR_CART_TO_ORDER:
+              return {...state,cartsToOrder:[]}
           case CartActionTypes.CLEAR_CART:
             return initialState;
     default:

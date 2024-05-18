@@ -23,6 +23,7 @@ import 'primeicons/primeicons.css';
 import ForgotPassword from './pages/ForgotPassword';
 import ChangePassword from './pages/ChangePassword';
 import Order from './pages/Order';
+import OrderCompleted from './pages/OrderCompleted';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -53,6 +54,18 @@ const router = createBrowserRouter([
         path: "dat-hang",
         element: (
           <Order/>
+        ),
+      },
+      {
+        path: "dat-hang-thanh-cong/:code",
+        element: (
+          <OrderCompleted/>
+        ),
+      },
+      {
+        path: "xac-nhan-don-hang/:code/:token",
+        element: (
+          <OrderCompleted/>
         ),
       },
       {
