@@ -24,5 +24,13 @@ export const orderApi = {
     getMyOrder(page=1,pageSize=5){
         var url=`orders/myOrder?page=${page}&pageSize=${pageSize}`
         return axiosInstance.get(url)
+    },
+    getLinkPaymentMomo(data){
+        var url=`payment/momo`
+        return axiosInstance.post(url,data)
+    },
+    paymentMomoSuccess(data){
+        var url=`payment/momo/ipn`
+        return axiosInstance.post(url,data)
     }
 }

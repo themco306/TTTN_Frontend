@@ -73,6 +73,7 @@ function OrderCompleted() {
               <p>Đơn hàng của bạn đã được tạo thành công.</p>
               {order?.paymentType==="OnlinePayment"&&order?.status==="Confirmed"&&(<div>
                 <p>Vui lòng chọn hình thức thanh toán</p>
+                <p>Thanh toán Momo: <Button  > <img alt="logo" src="https://primefaces.org/cdn/primereact/images/primereact-logo-light.svg" className="h-2rem"></img></Button></p>
               </div>)}
               {order?.status==="Confirmed"&&(<div>
                 <Link to={"/tai-khoan"}>Nhấn vào để quản lý đơn hàng</Link>

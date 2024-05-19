@@ -24,6 +24,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ChangePassword from './pages/ChangePassword';
 import Order from './pages/Order';
 import OrderCompleted from './pages/OrderCompleted';
+import CheckoutSuccess from './pages/CheckoutSuccess';
+import OrderDetail from './pages/OrderDetail';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -53,13 +55,13 @@ const router = createBrowserRouter([
       {
         path: "dat-hang",
         element: (
-          <Order/>
+          <ProtectedRoute><Order/></ProtectedRoute>
         ),
       },
       {
         path: "dat-hang-thanh-cong/:code",
         element: (
-          <OrderCompleted/>
+          <ProtectedRoute><OrderCompleted/></ProtectedRoute>
         ),
       },
       {
@@ -69,9 +71,21 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "thanh-toan-thanh-cong",
+        element: (
+          <CheckoutSuccess/>
+        ),
+      },
+      {
         path: "tai-khoan",
         element: (
           <ProtectedRoute><MyAcount/></ProtectedRoute>
+        ),
+      },
+      {
+        path: "chi-tiet-don-hang/:code",
+        element: (
+          <ProtectedRoute><OrderDetail/></ProtectedRoute>
         ),
       },
       {
@@ -104,7 +118,7 @@ const router = createBrowserRouter([
 ]);
 
 root.render(
-  <React.StrictMode>
+  // <React.StrictMode>
    
       <Provider store={store}>
       <AuthProvider>
@@ -114,7 +128,7 @@ root.render(
         </AuthProvider>
       </Provider>
    
-  </React.StrictMode>
+  // </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

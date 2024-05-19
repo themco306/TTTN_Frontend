@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { orderApi } from "../../api/orderApi";
 import { Paginator } from 'primereact/paginator';
 import ShowOrderStatus from "../../utils/ShowOrderStatus";
 import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import useCustomException from "../../utils/useCustomException";
 function Order() {
   const getStatusText = (status,paymentType) => {
     switch (status) {
@@ -65,12 +67,21 @@ function Order() {
         };
     }
   };
-  
+  const handleException=useCustomException()
+  const navigate=useNavigate()
   const [orderData, setOrderData] = useState([]);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(5);
   const [totalRecords, setTotalRecords] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [visible,setVisible]=useState(false);
+  const [loading,setLoading]=useState(false)
+
+  const footerContent = (
+    <div>
+        <Button label="Thoát" icon="pi pi-times" onClick={() => setVisible(false)} autoFocus  />
+    </div>
+);
   useEffect(() => {
     const fetch = async () => {
       try {
@@ -96,6 +107,27 @@ function Order() {
     setRows(event.rows);
     setCurrentPage(event.page + 1);  
 };
+const handlePaymentMomo=async(code)=>{
+  try {
+  setVisible(false)
+  setLoading(true)
+    const currentHost = window.location.origin;
+    const data={
+      orderCode:code,
+      redirectUrl:currentHost+'/thanh-toan-thanh-cong'
+    }
+    const res =await orderApi.getLinkPaymentMomo(data)
+    if(res.status===200){
+      window.location.href=res.data
+      setLoading(false)
+    }
+  } catch (error) {
+    if(error?.response){
+      handleException(error)
+    }
+    setLoading(false)
+  }
+}
   return (
     <div className="order-content">
       <h3 className="account-sub-title d-none d-md-block">
@@ -121,7 +153,7 @@ function Order() {
               <th className="order-price" style={{ width: "15%" }}>
                 Giá tiền
               </th>
-              <th className="order-action"></th>
+              <th className="order-action">Khác</th>
             </tr>
           </thead>
           <tbody>
@@ -138,9 +170,15 @@ function Order() {
                   </td>
                   <td><span style={{ fontWeight:'bold' }}>{item.total.toLocaleString()} VND</span></td>
                   <td style={{ display:'flex',justifyContent:'space-between',alignItems:'center' }}>
-                    <Button label="Chi tiết"/>
+                    <Button label="Chi tiết" onClick={()=>navigate('/chi-tiet-don-hang/'+item.code)}/>
                     {item.paymentType==="OnlinePayment"&&item.status==="Confirmed"&&(
-                      <Button severity="success" label="Thanh toán"/>
+                     <> <Button loading={loading} severity="success" label="Thanh toán" onClick={()=>setVisible(true)}/>
+                       <Dialog header="Chọn phương thức thanh toán" visible={visible} position={"top-right"} style={{ width: '30vw' }} onHide={() => setVisible(false)} footer={footerContent} draggable={false} resizable={false}>
+                        <Button onClick={()=>handlePaymentMomo(item.code)} label="Với Momo" style={{fontSize:15, height:"3em",width:"50%" }}>
+
+                        </Button>
+                       </Dialog>
+                      </>
                     )}
                   </td>
                   </tr>
@@ -152,7 +190,7 @@ function Order() {
                 </td>
                  </tr>
               )}
-           
+          
           </tbody>
           <tfoot>
             <tr>

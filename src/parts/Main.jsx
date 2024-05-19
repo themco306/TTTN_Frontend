@@ -8,7 +8,8 @@ function Main() {
 
   return (
    <main>
-    <ToastContainer />
+
+    <ToastContainer position='top-center' autoClose={2000} />
     <Outlet/>
   </main>
 
