@@ -26,6 +26,7 @@ import Order from './pages/Order';
 import OrderCompleted from './pages/OrderCompleted';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import OrderDetail from './pages/OrderDetail';
+import ProductDetail from './pages/ProductDetail';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -40,6 +41,12 @@ const router = createBrowserRouter([
         path: "san-pham",
         element: (
           <AllProduct/>
+        ),
+      },
+      {
+        path: "san-pham/:slug",
+        element: (
+          <ProductDetail/>
         ),
       },
       {

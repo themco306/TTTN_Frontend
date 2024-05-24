@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux'
 import { cartActions } from '../../state/actions/cartActions'
 import useCustomException from '../../utils/useCustomException'
 import { toast } from 'react-toastify'
+import { Link } from 'react-router-dom'
 
 function ItemProduct({product}) {
   console.log("ip",product)
@@ -35,35 +36,35 @@ function ItemProduct({product}) {
     data-animation-name="fadeInRightShorter"
   >
     <figure>
-      {product.galleries.length>0 && product.galleries.length>1?(
-      <a href="/product/1">
+      {product?.galleries.length>0 && product?.galleries.length>1?(
+      <Link to={`/san-pham/${product.slug}`}>
             <img
-            src={appUrl.imageURL+product.galleries[0].imagePath}
+            src={appUrl.imageURL+product?.galleries[0].imagePath}
             width={280}
             height={280}
             alt="product"
           />
            <img
-            src={appUrl.imageURL+product.galleries[1].imagePath}
+            src={appUrl.imageURL+product?.galleries[1].imagePath}
             width={280}
             height={280}
             alt="product"
           />
-      </a>):(
-        <a href="/product/1">
+      </Link>):(
+        <Link to={`/san-pham/${product?.slug}`}>
          <img
-            src={appUrl.imageURL+product.galleries[0].imagePath}
+            src={appUrl.imageURL+product?.galleries[0].imagePath}
             width={280}
             height={280}
             alt="product"
           />
            <img
-            src={appUrl.imageURL+product.galleries[0].imagePath}
+            src={appUrl.imageURL+product?.galleries[0].imagePath}
             width={280}
             height={280}
             alt="product"
           />
-      </a>
+      </Link>
       )}
       
       <div className="label-group">
@@ -74,11 +75,11 @@ function ItemProduct({product}) {
     <div className="product-details">
       <div className="category-list">
         <a href="category.html" className="product-category">
-          {product.category?.name}
+          {product?.category.name}
         </a>
       </div>
       <h3 className="product-title">
-        <a href="product.html">{product.name}</a>
+      <Link to={`/san-pham/${product?.slug}`}>{product?.name}</Link>
       </h3>
       <div className="ratings-container">
         <div className="product-ratings">
@@ -87,8 +88,8 @@ function ItemProduct({product}) {
         </div>
       </div>
       <div className="price-box">
-       <del className="old-price">{product.comparePrice.toLocaleString()}</del>
-<span className="product-price">{product.salePrice.toLocaleString()} VND</span>
+       <del className="old-price">{product?.comparePrice.toLocaleString()}</del>
+<span className="product-price">{product?.salePrice.toLocaleString()} VND</span>
 
       </div>
       <div className="product-action">

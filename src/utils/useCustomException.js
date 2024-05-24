@@ -19,7 +19,12 @@ function useCustomException() {
                 toast.error(res.data.error)
                 break;
             case 401:
-                toast.error(error.response.data.error);
+                if(error.response.data.error){
+                    toast.error(error.response.data.error);
+                }else{
+                    toast.error("Vui lòng đăng nhập")
+                }
+                
                 logoutContext();
                 break;
             case 403:
