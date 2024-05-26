@@ -27,6 +27,9 @@ import OrderCompleted from './pages/OrderCompleted';
 import CheckoutSuccess from './pages/CheckoutSuccess';
 import OrderDetail from './pages/OrderDetail';
 import ProductDetail from './pages/ProductDetail';
+import PostDetail from './pages/PostDetail';
+import AllPost from './pages/AllPost';
+import Contact from './pages/Contact';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -47,6 +50,24 @@ const router = createBrowserRouter([
         path: "san-pham/:slug",
         element: (
           <ProductDetail/>
+        ),
+      },
+      {
+        path: "bai-viet",
+        element: (
+          <AllPost/>
+        ),
+      },
+      {
+        path: "bai-viet/:slug",
+        element: (
+          <PostDetail/>
+        ),
+      },
+      {
+        path: "lien-he",
+        element: (
+          <Contact/>
         ),
       },
       {
@@ -107,13 +128,14 @@ const router = createBrowserRouter([
           <ChangePassword/>
         ),
       },
+      {
+        path: "*",
+        element: <NotFound />, 
+      },
     ],
   },
 
-  {
-    path: "*",
-    element: <NotFound />, 
-  },
+
   {
     path: "/nhan-lien-ket",
     element: <SendEmail />, 

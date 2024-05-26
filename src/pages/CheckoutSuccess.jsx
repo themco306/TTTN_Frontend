@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { orderApi } from '../api/orderApi';
 import { toast } from 'react-toastify';
 import useCustomException from '../utils/useCustomException';
+import { Link } from 'react-router-dom';
 
 function CheckoutSuccess() {
     const  handleException=useCustomException()
@@ -53,8 +54,9 @@ function CheckoutSuccess() {
 
       }, []);
   return (
-    <div>
-      Cảm ơn bạn đã mua hàng
+    <div style={{ margin:100, }}>
+      Cảm ơn bạn đã mua hàng 
+      <Link to={"/tai-khoan"}> Nhấn vào </Link> để xem đơn hàng của bạn
     </div>
   )
 }

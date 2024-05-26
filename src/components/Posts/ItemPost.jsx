@@ -1,27 +1,34 @@
 import React from 'react'
+import appUrl from '../../api/appUrl'
+import { Link } from 'react-router-dom';
 
-function ItemPost() {
+function ItemPost({data}) {
+  const truncateString = (str, num) => {
+    if (str.length <= num) {
+        return str;
+    }
+    return str.slice(0, num) + '...';
+};
   return (
     <article className="post">
         <div className="post-media">
-          <a href="single.html">
-            <img src="assets/images/blog/home/post-1.jpg" alt="Post" width={225} height={280} />
-          </a>
+          <Link to={"/bai-viet/"+data.slug}>
+            <img src={appUrl.postUrl+data.imagePath} alt="Post" width={225} height={280} />
+          </Link>
           <div className="post-date">
-            <span className="day">26</span>
-            <span className="month">Feb</span>
-          </div>
+    <span className="day">{new Date(data.createdAt).getDate()}</span>
+    <span className="month">Th{new Date(data.createdAt).getMonth()}</span>
+</div>
         </div>
         {/* End .post-media */}
         <div className="post-body">
           <h2 className="post-title">
-            <a href="single.html">Top New Collection</a>
+          <Link to={"/bai-viet/"+data.slug}>{truncateString(data.name,50)}</Link>
           </h2>
-          <div className="post-content">
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras non placerat mi. Etiam non tellus sem. Aenean...</p>
+          <div className="post-content" style={{ maxHeight:"4em" }} dangerouslySetInnerHTML={{ __html:data.detail }}>
           </div>
           {/* End .post-content */}
-          <a href="single.html" className="post-comment">0 Comments</a>
+          {/* <Link to={"/bai-viet/"+data.slug} className="post-comment">0 Comments</Link> */}
         </div>
         {/* End .post-body */}
       </article>

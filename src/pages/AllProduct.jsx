@@ -2,35 +2,95 @@ import React, { useEffect, useState } from "react";
 import ItemProduct from "../components/Products/ItemProduct";
 import productApi from "../api/productApi";
 import { InputNumber } from "primereact/inputnumber";
-
+import categoryApi from "../api/categoryApi";
+import brandApi from "../api/brandApi";
+import { Paginator } from 'primereact/paginator';
+import { Link } from "react-router-dom";
+import { Button } from "primereact/button";
 function AllProduct() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const categoryParam = urlParams.get('danhmuc');
+  const brandParam = urlParams.get('thuonghieu');
+  const [productData,setProductData]=useState([])
+  const [categoryData,setCategoryData]=useState([])
+  const [brandData,setBrandData]=useState([])
+  const [totalPages,setTotalPages]=useState(0)
+  const [totalCount,setTotalCount]=useState(0)
   const [pageSize,setPageSize]=useState(12);
+  const [pageNumber,setPageNumber]=useState(0);
   const [sortBy, setSortBy] = useState('');
 const [sortOrder, setSortOrder] = useState('');
 const [minPrice, setMinPrice] = useState(0);
 const [maxPrice, setMaxPrice] = useState(1000000);
+const [categoryId,setCategoryId]=useState(null)
+const [brandId,setBrandId]=useState(null)
 const [onFP,setOnFP]=useState(true)
   useEffect(()=>{
     const fecth=async()=>{
       try {
         const params={
+          pageNumber:pageNumber+1,
           pageSize,
           sortBy,
           sortOrder,
           minPrice,
-          maxPrice
+          maxPrice,
+          categoryId:categoryParam,
+          brandId:brandParam,
         }
         const response=await productApi.getFilter(params)
         console.log(response)
-        // if(response.status===200){
-        //     setProduct(response.data)
-        // }
+        if(response.status===200){
+          setTotalPages(response.data.totalPages)
+          setTotalCount(response.data.totalCount)
+          setProductData(response.data.items)
+        }
       } catch (error) {
         
       }
     }
     fecth()
-  },[pageSize,sortBy,sortOrder,onFP])
+  },[pageSize,sortBy,sortOrder,onFP,categoryId,brandId,pageNumber])
+  useEffect(()=>{
+    const fecth=async()=>{
+      try {
+        const response=await categoryApi.getActive()
+        console.log(response)
+        if(response.status===200){
+            setCategoryData(response.data)
+            if(categoryParam!==null){
+              const topic=response.data.find((item)=>item.slug===categoryParam)
+              if(topic!==undefined){
+                setCategoryId(topic)
+              }
+            }
+        }
+      } catch (error) {
+        
+      }
+    }
+    fecth()
+  },[])
+  useEffect(()=>{
+    const fecth=async()=>{
+      try {
+        const response=await brandApi.getActive()
+        console.log(response)
+        if(response.status===200){
+            setBrandData(response.data)
+            if(brandParam!==null){
+              const topic=response.data.find((item)=>item.slug===brandParam)
+              if(topic!==undefined){
+                setBrandId(topic)
+              }
+            }
+        }
+      } catch (error) {
+        
+      }
+    }
+    fecth()
+  },[])
   const handleSortChange = (event) => {
     const value = event.target.value;
     if (value.includes('-')) {
@@ -42,14 +102,43 @@ const [onFP,setOnFP]=useState(true)
       setSortOrder('');
     }
   };
+  const handleSelectCategory = (item) => {
+    if (categoryId === item) {
+      setCategoryId(null);
+        const url = new URL(window.location);
+        url.searchParams.delete('danhmuc');
+        window.history.pushState({}, '', url);
+    } else {
+      setCategoryId(item);
+        const url = new URL(window.location);
+        url.searchParams.set('danhmuc', item.slug);
+        window.history.pushState({}, '', url);
+    }
+};
+const handleSelectBrand = (item) => {
+  if (brandId === item) {
+    setBrandId(null);
+      const url = new URL(window.location);
+      url.searchParams.delete('thuonghieu');
+      window.history.pushState({}, '', url);
+  } else {
+    setBrandId(item);
+      const url = new URL(window.location);
+      url.searchParams.set('thuonghieu', item.slug);
+      window.history.pushState({}, '', url);
+  }
+};
+const onPageChange = (event) => {
+  setPageNumber(event.first);
+};
+
   return (
     <>
-   <div className="container">
+   <div className="container"  style={{ minHeight: "90vh" }}>
   <nav aria-label="breadcrumb" className="breadcrumb-nav">
     <ol className="breadcrumb">
-      <li className="breadcrumb-item"><a href="demo4.html"><i className="icon-home" /></a></li>
-      <li className="breadcrumb-item"><a href="#">Men</a></li>
-      <li className="breadcrumb-item active" aria-current="page">Accessories</li>
+      <li className="breadcrumb-item"><Link to={'/'}><i className="icon-home" /></Link></li>
+      <li className="breadcrumb-item"><a>Sản phẩm</a></li>
     </ol>
   </nav>
   <div className="row">
@@ -84,13 +173,16 @@ const [onFP,setOnFP]=useState(true)
                   <option value="price-desc">Giá từ cao đến thấp</option>
                 </select>
               </div>
+              <div style={{ display:'flex' }}>
+                <p style={{ display:'inline-block',fontSize:18 }}>Tìm thấy: <strong>{totalCount}</strong> sản phẩm.</p>
+              </div>
             </div>
           </div>
           <div className="toolbox-right">
             <div className="toolbox-item toolbox-show">
               <label>Hiển thị:</label>
               <div className="select-custom">
-                <select  onChange={(e)=>setPageSize(e.target.value)} name="count" className="form-control">
+                <select  onChange={(e)=>setPageSize(e.target.value)} name="count" className="form-control" value={pageSize}>
                   <option  value={12}>12</option>
                   <option value={24}>24</option>
                   <option value={36}>36</option>
@@ -100,523 +192,19 @@ const [onFP,setOnFP]=useState(true)
           </div>
         </nav></div>
       <div className="row">
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-1.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-1-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-hot">HOT</div>
-                <div className="product-label label-sale">-20%</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Ultimate 3D Bluetooth
-                  Speaker</a> </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="product.html" className="btn-icon btn-add-cart"><i className="fa fa-arrow-right" /><span>SELECT
-                    OPTIONS</span></a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-2.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-2-2.jpg" width={280} height={280} alt="product" />
-              </a>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Brown Women Casual HandBag</a>
-              </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="product-price">$33.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="product.html" className="btn-icon btn-add-cart"><i className="fa fa-arrow-right" /><span>SELECT
-                    OPTIONS</span></a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-3.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-3-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-sale">-20%</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Circled Ultimate 3D
-                  Speaker</a> </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-4.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-4-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-sale">-30%</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Blue Backpack for the Young -
-                  S</a> </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="product.html" className="btn-icon btn-add-cart"><i className="fa fa-arrow-right" /><span>SELECT
-                    OPTIONS</span></a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-5.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-5-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-hot">HOT</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Casual Spring Blue Shoes</a>
-              </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-6.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-6-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-sale">-8%</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Men Black Gentle Belt</a>
-              </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-7.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-7-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-sale">-8%</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Brown-Black Men Casual
-                  Glasses</a> </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-8.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-8-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-sale">-40%</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Brown-Black Men Casual
-                  Glasses</a> </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-9.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-9-2.jpg" width={280} height={280} alt="product" />
-              </a>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Black Men Casual Glasses</a>
-              </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="product.html" className="btn-icon btn-add-cart"><i className="fa fa-arrow-right" /><span>SELECT
-                    OPTIONS</span></a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-10.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-10-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-sale">-30%</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Basketball Sports Blue
-                  Shoes</a> </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-11.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-11-2.jpg" width={280} height={280} alt="product" />
-              </a>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Men Sports Travel Bag</a>
-              </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
-        <div className="col-6 col-sm-4">
-          <div className="product-default">
-            <figure>
-              <a href="product.html">
-                <img src="assets/images/products/product-12.jpg" width={280} height={280} alt="product" />
-                <img src="assets/images/products/product-12-2.jpg" width={280} height={280} alt="product" />
-              </a>
-              <div className="label-group">
-                <div className="product-label label-hot">HOT</div>
-              </div>
-            </figure>
-            <div className="product-details">
-              <div className="category-wrap">
-                <div className="category-list">
-                  <a href="category.html" className="product-category">category</a>
-                </div>
-              </div>
-              <h3 className="product-title"> <a href="product.html">Brown HandBag</a> </h3>
-              <div className="ratings-container">
-                <div className="product-ratings">
-                  <span className="ratings" style={{width: '100%'}} />
-                  {/* End .ratings */}
-                  <span className="tooltiptext tooltip-top" />
-                </div>
-                {/* End .product-ratings */}
-              </div>
-              {/* End .product-container */}
-              <div className="price-box">
-                <span className="old-price">$90.00</span>
-                <span className="product-price">$70.00</span>
-              </div>
-              {/* End .price-box */}
-              <div className="product-action">
-                <a href="wishlist.html" className="btn-icon-wish" title="wishlist"><i className="icon-heart" /></a>
-                <a href="#" className="btn-icon btn-add-cart product-type-simple"><i className="icon-shopping-cart" />ADD TO CART</a>
-                <a href="ajax/product-quick-view.html" className="btn-quickview" title="Quick View"><i className="fas fa-external-link-alt" /></a>
-              </div>
-            </div>
-            {/* End .product-details */}
-          </div>
-        </div>
-        {/* End .col-sm-4 */}
+        {productData.length>0&&productData.map((item)=>(
+           <div className="col-6 col-sm-4">
+           <ItemProduct product={item}/>
+         </div>
+        ))}
+       
       </div>
       {/* End .row */}
       <nav className="toolbox toolbox-pagination">
         <div className="toolbox-item toolbox-show">
-          <label>Show:</label>
+          <label>Hiển thị:</label>
           <div className="select-custom">
-            <select name="count" className="form-control" onChange={(e)=>setPageSize(e.target.value)}>
+            <select value={pageSize} name="count" className="form-control" onChange={(e)=>setPageSize(e.target.value)}>
               <option value={12}>12</option>
               <option value={24}>24</option>
               <option value={36}>36</option>
@@ -626,25 +214,14 @@ const [onFP,setOnFP]=useState(true)
         </div>
         {/* End .toolbox-item */}
         <ul className="pagination toolbox-item">
-          <li className="page-item disabled">
-            <a className="page-link page-link-btn" href="#"><i className="icon-angle-left" /></a>
-          </li>
-          <li className="page-item active">
-            <a className="page-link" href="#">1 <span className="sr-only">(current)</span></a>
-          </li>
-          <li className="page-item"><a className="page-link" href="#">2</a></li>
-          <li className="page-item"><a className="page-link" href="#">3</a></li>
-          <li className="page-item"><span className="page-link">...</span></li>
-          <li className="page-item">
-            <a className="page-link page-link-btn" href="#"><i className="icon-angle-right" /></a>
-          </li>
+        <Paginator first={pageNumber} rows={pageSize} totalRecords={totalPages} onPageChange={onPageChange} />
         </ul>
       </nav>
     </div>
     {/* End .col-lg-9 */}
     <div className="sidebar-overlay" />
-    <aside className="sidebar-shop col-lg-3 order-lg-first mobile-sidebar">
-      <div className="pin-wrapper" style={{height: '1212.8px'}}><div className="sidebar-wrapper" style={{borderBottom: '0px none rgb(119, 119, 119)', width: 280}}>
+    <aside className="sidebar-shop col-lg-3 order-lg-first mobile-sidebar mb-2">
+      <div className="pin-wrapper" ><div className="sidebar-wrapper" style={{borderBottom: '0px none rgb(119, 119, 119)', width: 280}}>
           <div className="widget">
             <h3 className="widget-title">
               <a data-toggle="collapse" href="#widget-body-2" role="button" aria-expanded="true" aria-controls="widget-body-2">Danh mục</a>
@@ -652,7 +229,27 @@ const [onFP,setOnFP]=useState(true)
             <div className="collapse show" id="widget-body-2">
               <div className="widget-body">
                 <ul className="cat-list">
-                  <li><a style={{cursor:"pointer"}}>Music<span className="products-count">(2)</span></a></li>
+                {categoryData.length>0&&categoryData.map((item)=>(
+                <li><a onClick={()=>handleSelectCategory(item)} style={{ cursor: "pointer", color: categoryId === item ? "blue" : "inherit" }}>{item.name}<span className="products-count">({item.totalProduct})</span></a></li>
+                ))}
+                  
+                </ul>
+              </div>
+              {/* End .widget-body */}
+            </div>
+            {/* End .collapse */}
+          </div>
+          <div className="widget">
+            <h3 className="widget-title">
+              <a data-toggle="collapse" href="#widget-body-4" role="button" aria-expanded="true" aria-controls="widget-body-4">Thương hiệu</a>
+            </h3>
+            <div className="collapse show" id="widget-body-4">
+              <div className="widget-body">
+                <ul className="cat-list">
+                {brandData.length>0&&brandData.map((item)=>(
+                <li><a onClick={()=>handleSelectBrand(item)} style={{ cursor: "pointer", color: brandId === item ? "blue" : "inherit" }}>{item.name}<span className="products-count">({item.totalProduct})</span></a></li>
+                ))}
+                  
                 </ul>
               </div>
               {/* End .widget-body */}
@@ -662,17 +259,19 @@ const [onFP,setOnFP]=useState(true)
           {/* End .widget */}
           <div className="widget">
             <h3 className="widget-title">
-              <a data-toggle="collapse" href="#widget-body-3" role="button" aria-expanded="true" aria-controls="widget-body-3">Price</a>
+              <a data-toggle="collapse" href="#widget-body-3" role="button" aria-expanded="true" aria-controls="widget-body-3">Giá</a>
             </h3>
             <div className="collapse show" id="widget-body-3">
               <div className="widget-body pb-0">
-                  <div className="price-slider-wrapper row">
+                  <div className="price-slider-wrapper row" >
                     <div className="col-md-5">
-                      <input value={minPrice} type="number" onChange={(e)=>setMinPrice(parseInt(e.target.value))} className="form-control"  />
+                      <input value={minPrice} type="number" onChange={(e)=>setMinPrice(parseInt(e.target.value))} className="form-control" min={0} />
                     </div>
-                    <div className="col-md-1">--</div>
-                    <div className="col-md-6">
-                      <input  value={maxPrice} type="number" className="form-control" onChange={(e)=>setMaxPrice(parseInt(e.target.value))} />
+                    <div className="col-md-2" style={{ display:'flex',alignItems:'center',justifyContent:'center',width:"20em" }}>
+                      <Button onClick={()=>{setMinPrice(0);setMaxPrice(1000000)}} tooltip="Nhấn để làm mới giá" icon="pi pi-history" ></Button>
+                    </div>
+                    <div className="col-md-5">
+                      <input min={minPrice}  value={maxPrice} type="number" className="form-control" onChange={(e)=>setMaxPrice(parseInt(e.target.value))} />
                     </div>
                   </div>
                   {/* End .price-slider-wrapper */}
@@ -692,9 +291,9 @@ const [onFP,setOnFP]=useState(true)
           </div>
 
           <div className="widget widget-block">
-            <h3 className="widget-title">Custom HTML Block</h3>
-            <h5>This is a custom sub-title.</h5>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras non placerat mi. Etiam non tellus </p>
+            <h3 className="widget-title">Shop TK</h3>
+            <h5>Mô hình rẻ , nhưng chất lượng.</h5>
+            <p>Chúc bạn một ngày mua sắm vui vẻ</p>
           </div>
           {/* End .widget */}
         </div></div>

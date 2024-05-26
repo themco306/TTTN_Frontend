@@ -4654,12 +4654,13 @@ span.page-link,
   }
 }
 .minipopup-area {
+  visibility: hidden;
   position: fixed;
   right: 20px;
   bottom: 20px;
   font-size: 1.1em;
   text-align: center;
-  z-index: 20002;
+  z-index: 0;
 }
 
 .minipopup-box {

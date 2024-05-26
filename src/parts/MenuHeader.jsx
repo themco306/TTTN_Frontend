@@ -30,7 +30,7 @@ function MenuHeader() {
             <ul className="menu">
                 {menuData.length>0&&menuData.map((item)=>(
                     <li className={item.link==lastSegment?"active":""}>
-                    <Link to={item.link}>{item.name}</Link>
+                    <Link  to={item.link}>{item.name}</Link>
                     <SubMenuHeader menuId={item.id}/>
                   </li>
                   

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import webInfoApi from "../api/webInfoApi";
+import menuApi from "../api/menuApi";
 
 function Footer() {
   const [webInfo,setWebInfo]=useState({});
+  const [menuData,setMenuData]=useState([])
   useEffect(() => {
     const fetchData = async () => {
         try {
@@ -18,6 +20,20 @@ function Footer() {
     };
     fetchData();
 }, []);
+useEffect(()=>{
+  const fecth=async()=>{
+      try {
+        const response=await menuApi.getAllFooter()
+        console.log(response)  
+        if(response.status===200){
+          setMenuData(response.data)
+        }
+      } catch (error) {
+          
+      }
+  }
+  fecth()
+},[])
   return (
     <footer className="footer bg-dark">
       <div className="footer-middle">
@@ -88,84 +104,19 @@ function Footer() {
               <div className="widget">
                 <h4 className="widget-title">Dịch Vụ Khách Hàng</h4>
                 <ul className="links">
-                  <li>
-                    <a href="#">Trợ Giúp &amp; Câu Hỏi Thường Gặp</a>
-                  </li>
-                  <li>
-                    <a href="#">Theo Dõi Đơn Hàng</a>
-                  </li>
-                  <li>
-                    <a href="#">Vận Chuyển &amp; Giao Hàng</a>
-                  </li>
-                  <li>
-                    <a href="#">Lịch Sử Đơn Hàng</a>
-                  </li>
-                  <li>
-                    <a href="#">Tìm Kiếm Nâng Cao</a>
-                  </li>
-                  <li>
-                    <a href="dashboard.html">Tài Khoản Của Tôi</a>
-                  </li>
-                  <li>
-                    <a href="#">Cơ Hội Nghề Nghiệp</a>
-                  </li>
-                  <li>
-                    <a href="about.html">Về Chúng Tôi</a>
-                  </li>
-                  <li>
-                    <a href="#">Bán Hàng Doanh Nghiệp</a>
-                  </li>
-                  <li>
-                    <a href="#">Quyền Riêng Tư</a>
-                  </li>
+                  {menuData.length>0&&menuData.map((item)=>(
+                     <li>
+                     <Link to={"/bai-viet/"+item.link}>{item.name}</Link>
+                   </li>
+                  ))}
+                 
+                 
                 </ul>
               </div>
               {/* Kết Thúc .widget */}
             </div>
-
-            {/* End .col-lg-3 */}
-            <div className="col-lg-3 col-sm-6">
-              <div className="widget">
-                <h4 className="widget-title">Thẻ Phổ Biến</h4>
-                <div className="tagcloud">
-                  <a href="#">Túi</a>
-                  <a href="#">Màu Đen</a>
-                  <a href="#">Màu Xanh</a>
-                  <a href="#">Quần Áo</a>
-                  <a href="#">Thời Trang</a>
-                  <a href="#">Trung Tâm</a>
-                  <a href="#">Áo Sơ Mi</a>
-                  <a href="#">Giày</a>
-                  <a href="#">Váy</a>
-                  <a href="#">Thể Thao</a>
-                  <a href="#">Áo Len</a>
-                </div>
-              </div>
-
-              {/* End .widget */}
-            </div>
-            {/* End .col-lg-3 */}
-            <div className="col-lg-3 col-sm-6">
-              <div className="widget widget-newsletter">
-                <h4 className="widget-title">Đăng ký nhận bản tin</h4>
-                <p>
-                  Nhận thông tin mới nhất về sự kiện, khuyến mãi và ưu đãi. Đăng
-                  ký nhận bản tin:
-                </p>
-                <form action="#" className="mb-0">
-                  <input
-                    type="email"
-                    className="form-control m-b-3"
-                    placeholder="Địa chỉ email"
-                    required
-                  />
-                  <input
-                    type="submit"
-                    className="btn btn-primary shadow-none"
-                    defaultValue="Đăng Ký"
-                  />
-                </form>
-              </div>
+            <div className="col-lg-6 col-sm-6">
+              <div  className="widget" dangerouslySetInnerHTML={{ __html:webInfo?.googleMap }}></div>
 
               {/* End .widget */}
             </div>
@@ -186,34 +137,7 @@ function Footer() {
             </div>
             <div className="footer-right ml-auto mt-1 mt-sm-0">
               <div className="payment-icons">
-                <span
-                  className="payment-icon visa"
-                  style={{
-                    backgroundImage:
-                      "url(assets/images/payments/payment-visa.svg)",
-                  }}
-                />
-                <span
-                  className="payment-icon paypal"
-                  style={{
-                    backgroundImage:
-                      "url(assets/images/payments/payment-paypal.svg)",
-                  }}
-                />
-                <span
-                  className="payment-icon stripe"
-                  style={{
-                    backgroundImage:
-                      "url(assets/images/payments/payment-stripe.png)",
-                  }}
-                />
-                <span
-                  className="payment-icon verisign"
-                  style={{
-                    backgroundImage:
-                      "url(assets/images/payments/payment-verisign.svg)",
-                  }}
-                />
+               
               </div>
             </div>
           </div>

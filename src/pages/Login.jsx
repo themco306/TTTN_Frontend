@@ -14,6 +14,8 @@ function Login() {
   //login
   const [emailOrUsername, setEmailOrUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe,setRememberMe]=useState(false)
+
   //register
   const [email,setEmail]=useState('')
   const [rPassword,setRPassword]=useState('')
@@ -61,7 +63,7 @@ const handleRegister =async(userData)=>{
   const handleLoginSubmit = (event) => {
     event.preventDefault();
 
-    handleLogin({ emailOrUsername, password });
+    handleLogin({ emailOrUsername, password,rememberMe });
   };
   const handleRegisterSubmit =(event)=>{
     event.preventDefault();
@@ -89,7 +91,7 @@ const handleRegister =async(userData)=>{
             <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} className="form-input form-wide" id="login-password" required autoComplete='new-password'/>
             <div className="form-footer">
               <div className="custom-control custom-checkbox mb-0">
-                <input type="checkbox" className="custom-control-input" id="lost-password" />
+                <input type="checkbox" checked={rememberMe} onChange={()=>setRememberMe(!rememberMe)} className="custom-control-input" id="lost-password" />
                 <label className="custom-control-label mb-0" htmlFor="lost-password">Lưu đăng nhập</label>
               </div>
               <Link to="/quen-mat-khau" className="forget-password text-dark form-footer-right">Quên mật khẩu?</Link>

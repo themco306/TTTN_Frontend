@@ -21,6 +21,9 @@ function ConfirmEmail() {
         }
        
       }, [user,userId]);
+      useEffect(()=>{
+        handleConfirm()
+      },[])
       const handleConfirm=async ()=>{
         try {
             setLoading(true)
@@ -32,7 +35,7 @@ function ConfirmEmail() {
                     // logoutContext(); // Perform any logout actions if needed
                     setLoading(false); // Set loading state to false if needed
                     navigate("/"); // Redirect to login page after 3 seconds
-                  }, 3000); // 3000 milliseconds = 3 seconds
+                  }, 1000); // 3000 milliseconds = 3 seconds
             }
         } catch (error) {
             if(error.response.status){

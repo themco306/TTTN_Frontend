@@ -1,30 +1,54 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import topicApi from "../../api/topicApi";
+import categoryApi from "../../api/categoryApi";
+import brandApi from "../../api/brandApi";
+
 function NotFound() {
+  const location = useLocation();
+  const pathSegments = location.pathname.split('/').filter(segment => segment !== '');
+  const lastSegment = pathSegments.length === 0 ? '/' : pathSegments[pathSegments.length - 1];
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        const [topicResponse, categoryResponse, brandResponse] = await Promise.all([
+          topicApi.getActive(),
+          categoryApi.getActive(),
+          brandApi.getActive()
+        ]);
+
+        const topic = topicResponse.data.find(item => item.slug === lastSegment);
+        if (topic !== undefined) {
+          navigate('/bai-viet?chuDe=' + lastSegment);
+          return;
+        }
+
+        const category = categoryResponse.data.find(item => item.slug === lastSegment);
+        if (category !== undefined) {
+          navigate('/san-pham?danhmuc=' + lastSegment);
+          return;
+        }
+
+        const brand = brandResponse.data.find(item => item.slug === lastSegment);
+        if (brand !== undefined) {
+          navigate('/san-pham?thuonghieu=' + lastSegment);
+          return;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAllData();
+  }, [lastSegment, navigate]);
+
   return (
-    <div className="page-wrapper">
-      <div style={{ zIndex: 999 }}>
-        <div className="noise"></div>
-        <div className="overlay"></div>
-        <div className="terminal">
-          <h1>
-            Lỗi <span class="errorcode">404</span>
-          </h1>
-          <p className="output">
-            Trang bạn đang tìm kiếm có thể đã bị xóa, thay đổi tên hoặc tạm thời
-            không khả dụng.
-          </p>
-          <p className="output">
-            Vui lòng thử{" "}
-            <a href="#1" onClick={() => window.history.back()}>
-              quay lại
-            </a>{" "}
-            hoặc <a href="/">trở về trang chủ</a>.
-            
-          </p>
-          <p className="output">Chúc may mắn.</p>
-        </div>
-      </div>
+    <div style={{ minHeight: "50vh",marginTop:"20%", display: 'flex', justifyContent: 'center' }}>
+      <span style={{ fontSize: 20 }}>
+        Trang này không tồn tại
+      </span>
     </div>
   );
 }

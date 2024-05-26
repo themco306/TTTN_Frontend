@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import appUrl from "../api/appUrl";
 import webInfoApi from "../api/webInfoApi";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +16,12 @@ function Header() {
   const dispatch=useDispatch()
   const isLoggedIn=useSelector(state=>state.authReducer?.isLoggedIn)
   const {quantity}=useSelector(state=>state.cartReducers)
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0); 
+  }, [pathname]);
+
     useEffect(() => {
       const fetchData = async () => {
           try {
@@ -71,19 +77,9 @@ function Header() {
                 <ul>
                   {isLoggedIn&&(
                      <li>
-                     <a href="dashboard.html">Tài Khoản</a>
+                     <Link to={"/tai-khoan"}>Tài Khoản</Link>
                    </li>
                   )}
-                 
-                  <li>
-                    <a href="about.html">Về Chúng Tôi</a>
-                  </li>
-                  <li>
-                    <a href="blog.html">Blog</a>
-                  </li>
-                  <li>
-                    <a href="wishlist.html">Yêu Thích</a>
-                  </li>
                   <li>
                     <Link to="gio-hang">Giỏ Hàng</Link>
                   </li>

@@ -11,11 +11,15 @@ function OrderCompleted() {
     const handleException=useCustomException()
     const [order,setOrder]=useState(null)
     const [loading,setLoading]=useState(false)
+    const [loadingC,setLoadingC]=useState(false)
     useEffect(() => {
       if (!code) {
         navigate("/");
       }
     }, [code, token, navigate]);
+    useEffect(() => {
+     handleConfirmOrder()
+    }, []);
     useEffect(() => {
       const fecth =async()=>{
         try {
@@ -34,7 +38,7 @@ function OrderCompleted() {
         }
       }
       fecth()
-    }, [code, token, navigate]);
+    }, [code, token, navigate,loading]);
     const handleConfirmOrder =async()=>{
       try {
         setLoading(true)
@@ -55,6 +59,26 @@ function OrderCompleted() {
       setLoading(false)
       }
     }
+    const handlePaymentMomo=async(code)=>{
+      try {
+      setLoadingC(true)
+        const currentHost = window.location.origin;
+        const data={
+          orderCode:code,
+          redirectUrl:currentHost+'/thanh-toan-thanh-cong'
+        }
+        const res =await orderApi.getLinkPaymentMomo(data)
+        if(res.status===200){
+          window.location.href=res.data
+          setLoadingC(false)
+        }
+      } catch (error) {
+        if(error?.response){
+          handleException(error)
+        }
+        setLoadingC(false)
+      }
+    }
     if(token)
       {
         return(<div className="container checkout-container">
@@ -73,7 +97,7 @@ function OrderCompleted() {
               <p>Đơn hàng của bạn đã được tạo thành công.</p>
               {order?.paymentType==="OnlinePayment"&&order?.status==="Confirmed"&&(<div>
                 <p>Vui lòng chọn hình thức thanh toán</p>
-                <p>Thanh toán Momo: <Button  > <img alt="logo" src="https://primefaces.org/cdn/primereact/images/primereact-logo-light.svg" className="h-2rem"></img></Button></p>
+                <p>Thanh toán :  <Button loading={loadingC} onClick={()=>handlePaymentMomo(order.code)} label="Với Momo" style={{fontSize:15, height:"3em",width:"50%" }}/></p>
               </div>)}
               {order?.status==="Confirmed"&&(<div>
                 <Link to={"/tai-khoan"}>Nhấn vào để quản lý đơn hàng</Link>
