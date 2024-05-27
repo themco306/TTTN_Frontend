@@ -32,5 +32,9 @@ export const orderApi = {
     paymentMomoSuccess(data){
         var url=`payment/momo/ipn`
         return axiosInstance.post(url,data)
-    }
+    },
+    updateStatus(id,data){
+        var url=`orders/myStatus/${id}`
+        return axiosInstance.put(url,data)
+    },
 }

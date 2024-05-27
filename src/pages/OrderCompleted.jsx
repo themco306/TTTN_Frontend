@@ -18,8 +18,11 @@ function OrderCompleted() {
       }
     }, [code, token, navigate]);
     useEffect(() => {
-     handleConfirmOrder()
-    }, []);
+      if(token){
+        handleConfirmOrder()
+      }
+     
+    }, [token]);
     useEffect(() => {
       const fecth =async()=>{
         try {

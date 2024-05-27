@@ -7,6 +7,8 @@ import { Column } from "primereact/column";
 import { Image } from "primereact/image";
 import appUrl from "../api/appUrl";
 import ShowOrderStatus from "../utils/ShowOrderStatus";
+import { Button } from "primereact/button";
+import { toast } from "react-toastify";
 
 function OrderDetail() {
   const getStatusText = (status,paymentType) => {
@@ -88,6 +90,39 @@ function OrderDetail() {
     };
     fecth();
   }, [code]);
+  const handleDis =(status,statusD,paymentType)=>{
+    switch (statusD) {
+        case "Cancelled":
+            if(status==="PendingUserConfirmation"){
+                return false;
+            }
+            return true;
+        case "Received":
+            if(status==="Delivered")
+                {
+                    return false;
+                }
+            return true;
+        default:
+            return false;
+    }
+       
+  }
+  const handleChangeStatus = async (status) => {
+    try {
+        const data = {
+            status: status
+        };
+        const response = await orderApi.updateStatus(order.id, data);
+        console.log(response)
+        if (response.status === 200) {
+            setOrder(prev => ({ ...prev, status: status }));
+            toast.success(response.data.message);
+        }
+    } catch (error) {
+        toast.error('Có lỗi xảy ra, vui lòng thử lại.');
+    }
+};
   return (
     <div className="row m-5">
       <div className="col-md-5">
@@ -131,6 +166,11 @@ function OrderDetail() {
         {order?.paidOrder&&order?.paidOrder.paymentDate!==null&&(
             <p>Đã thanh toán qua: <strong>{order?.paidOrder.paymentMethod}</strong> vào lúc {new Date(order?.paidOrder.paymentDate).toLocaleString()}</p>
         )}
+        <div style={{ display:'flex',justifyContent:'space-between',width:"40%" }}>
+            <Button onClick={()=>handleChangeStatus("Received")} disabled={handleDis(order?.status,"Received",order?.paymentType)} severity='success' icon={'pi pi-verified'} tooltip='Nhấn vào để xác nhận bạn đã nhận được hàng'/>
+            <Button onClick={()=>handleChangeStatus("Cancelled")} disabled={handleDis(order?.status,"Cancelled",order?.paymentType)} severity='danger' icon={'pi pi-trash'} tooltip='Nhấn vào để hủy đơn hàng'/>
+        </div>
+
       </div>
     </div>
   );
