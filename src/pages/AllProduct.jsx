@@ -21,7 +21,7 @@ function AllProduct() {
   const [sortBy, setSortBy] = useState('');
 const [sortOrder, setSortOrder] = useState('');
 const [minPrice, setMinPrice] = useState(0);
-const [maxPrice, setMaxPrice] = useState(1000000);
+const [maxPrice, setMaxPrice] = useState(10000000);
 const [categoryId,setCategoryId]=useState(null)
 const [brandId,setBrandId]=useState(null)
 const [onFP,setOnFP]=useState(true)

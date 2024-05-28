@@ -9,32 +9,33 @@ import { cartActions } from "../state/actions/cartActions";
 import DropdownCart from "../components/DropdownCart";
 import { Helmet } from "react-helmet";
 import MenuHeader from "./MenuHeader";
+import SearchBox from "./SearchBox";
 
 function Header() {
-  const {logoutContext}=useAuth()
-  const [webInfo,setWebInfo]=useState({});
-  const dispatch=useDispatch()
-  const isLoggedIn=useSelector(state=>state.authReducer?.isLoggedIn)
-  const {quantity}=useSelector(state=>state.cartReducers)
+  const { logoutContext } = useAuth();
+  const [webInfo, setWebInfo] = useState({});
+  const dispatch = useDispatch();
+  const isLoggedIn = useSelector((state) => state.authReducer?.isLoggedIn);
+  const { quantity } = useSelector((state) => state.cartReducers);
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0); 
+    window.scrollTo(0, 0);
   }, [pathname]);
 
-    useEffect(() => {
-      const fetchData = async () => {
-          try {
-              const res = await webInfoApi.getFirst();
-              if (res.status === 200) {
-                console.log(res)
-                 setWebInfo(res.data)
-              }
-          } catch (error) {
-             console.log(error)
-          }
-      };
-      fetchData();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await webInfoApi.getFirst();
+        if (res.status === 200) {
+          console.log(res);
+          setWebInfo(res.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -42,10 +43,10 @@ function Header() {
       if (isLoggedIn) {
         try {
           const response = await userApi.getMyCart();
-          console.log(response)
+          console.log(response);
           if (response.status === 200) {
-            dispatch(cartActions.setInitShow(response.data))
-          } 
+            dispatch(cartActions.setInitShow(response.data));
+          }
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -54,75 +55,73 @@ function Header() {
     fetchUserData();
   }, [isLoggedIn]);
 
-  const handleLogout =()=>{
-    logoutContext()
-  }
+  const handleLogout = () => {
+    logoutContext();
+  };
   return (
     <header className="header">
-        <Helmet>
+      <Helmet>
         <title>Trang chủ</title>
-        <link rel="icon" href={webInfo.icon!==undefined&&(appUrl.logoURL+webInfo?.icon)} />
+        <link
+          rel="icon"
+          href={webInfo.icon !== undefined && appUrl.logoURL + webInfo?.icon}
+        />
       </Helmet>
       <div className="header-top">
         <div className="container">
           <div className="header-left d-none d-sm-block">
-            <p className="top-message text-uppercase">
-              {webInfo?.description}
-            </p>
+            <p className="top-message text-uppercase">{webInfo?.description}</p>
           </div>
           <div className="header-right header-dropdowns ml-0 ml-sm-auto w-sm-100">
             <div className="header-dropdown dropdown-expanded d-none d-lg-block">
               <a href="#">Links</a>
               <div className="header-menu">
                 <ul>
-                  {isLoggedIn&&(
-                     <li>
-                     <Link to={"/tai-khoan"}>Tài Khoản</Link>
-                   </li>
+                  {isLoggedIn && (
+                    <li>
+                      <Link to={"/tai-khoan"}>Tài Khoản</Link>
+                    </li>
                   )}
                   <li>
                     <Link to="gio-hang">Giỏ Hàng</Link>
                   </li>
-                  {!isLoggedIn?(<li>
-                    <Link to="dang-nhap" >
-                      Đăng Nhập
-                    </Link>
-                  </li>):(
+                  {!isLoggedIn ? (
                     <li>
-                    <a style={{ cursor:"pointer" }} onClick={handleLogout}>
-                      Đăng xuất
-                    </a>
-                  </li>
+                      <Link to="dang-nhap">Đăng Nhập</Link>
+                    </li>
+                  ) : (
+                    <li>
+                      <a style={{ cursor: "pointer" }} onClick={handleLogout}>
+                        Đăng xuất
+                      </a>
+                    </li>
                   )}
-                  
                 </ul>
               </div>
             </div>
             <span className="separator" />
             <div className="social-icons">
-              {webInfo?.facebookLink!==null&&(
-                 <a
-                 href={webInfo?.facebookLink}
-                 className="social-icon social-facebook icon-facebook"
-                 target="_blank"
-               />
-              )}
-             {webInfo?.twitterLink!==null&&(
-              <a
-              href={webInfo?.twitterLink}
-              className="social-icon social-twitter icon-twitter"
-              target="_blank"
-            />
-             )}
-             {webInfo?.instagramLink!==null&&(
+              {webInfo?.facebookLink !== null && (
                 <a
-                href={webInfo?.instagramLink}
-                className="social-icon social-instagram icon-instagram"
-                target="_blank"
-              />
-             )}
-              
-            
+                  href={webInfo?.facebookLink}
+                  className="social-icon social-facebook icon-facebook"
+                  target="_blank"
+                />
+              )}
+              {webInfo?.twitterLink !== null && (
+                <a
+                  href={webInfo?.twitterLink}
+                  className="social-icon social-twitter icon-twitter"
+                  target="_blank"
+                />
+              )}
+              {webInfo?.instagramLink !== null && (
+                <a
+                  href={webInfo?.instagramLink}
+                  className="social-icon social-instagram icon-instagram"
+                  target="_blank"
+                />
+              )}
             </div>
           </div>
         </div>
@@ -142,7 +141,7 @@ function Header() {
             </button>
             <Link to="/" className="logo">
               <img
-                src={webInfo?.icon&&(appUrl.logoURL+webInfo?.icon)}
+                src={webInfo?.icon && appUrl.logoURL + webInfo?.icon}
                 width={111}
                 height={44}
                 alt="Porto Logo"
@@ -150,53 +149,7 @@ function Header() {
             </Link>
           </div>
           <div className="header-right w-lg-max">
-            <div className="header-icon header-search header-search-inline header-search-category w-lg-max text-right mt-0">
-              <a href="#" className="search-toggle" role="button">
-                <i className="icon-search-3" />
-              </a>
-              <form action="#" method="get">
-                <div className="header-search-wrapper">
-                  <input
-                    type="search"
-                    className="form-control"
-                    name="q"
-                    id="q"
-                    placeholder="Tìm kiếm..."
-                    required
-                  />
-                  <div className="select-custom">
-                    <select id="cat" name="cat">
-                      <option value>Danh mục</option>
-                      <option value={4}>Fashion</option>
-                      <option value={12}>- Women</option>
-                      <option value={13}>- Men</option>
-                      <option value={66}>- Jewellery</option>
-                      <option value={67}>- Kids Fashion</option>
-                      <option value={5}>Electronics</option>
-                      <option value={21}>- Smart TVs</option>
-                      <option value={22}>- Cameras</option>
-                      <option value={63}>- Games</option>
-                      <option value={7}>Home &amp; Garden</option>
-                      <option value={11}>Motors</option>
-                      <option value={31}>- Cars and Trucks</option>
-                      <option value={32}>
-                        - Motorcycles &amp; Powersports
-                      </option>
-                      <option value={33}>- Parts &amp; Accessories</option>
-                      <option value={34}>- Boats</option>
-                      <option value={57}>- Auto Tools &amp; Supplies</option>
-                    </select>
-                  </div>
-                  {/* End .select-custom */}
-                  <button
-                    className="btn icon-magnifier p-0"
-                    title="search"
-                    type="submit"
-                  />
-                </div>
-                {/* End .header-search-wrapper */}
-              </form>
-            </div>
+           <SearchBox/>
             {/* End .header-search */}
             <div className="header-contact d-none d-lg-flex pl-4 pr-4">
               <img
@@ -213,12 +166,16 @@ function Header() {
                 </Link>
               </h6>
             </div>
-            {isLoggedIn?(<Link to="tai-khoan" className="header-icon" title="Tài khoản">
-              <i className="icon-user-2" />
-            </Link>):(<Link to="dang-nhap" className="header-icon" title="Đăng nhập">
-              <i className="icon-user-2" />
-            </Link>)}
-            
+            {isLoggedIn ? (
+              <Link to="tai-khoan" className="header-icon" title="Tài khoản">
+                <i className="icon-user-2" />
+              </Link>
+            ) : (
+              <Link to="dang-nhap" className="header-icon" title="Đăng nhập">
+                <i className="icon-user-2" />
+              </Link>
+            )}
+
             <a href="wishlist.html" className="header-icon" title="wishlist">
               <i className="icon-wishlist-2" />
             </a>
@@ -234,30 +191,31 @@ function Header() {
                 data-display="static"
               >
                 <i className="minicart-icon" />
-                <span className="cart-count badge-circle">{quantity<100?quantity:'99+'}</span>
+                <span className="cart-count badge-circle">
+                  {quantity < 100 ? quantity : "99+"}
+                </span>
               </a>
               <div className="cart-overlay" />
               <div className="dropdown-menu mobile-cart">
-                <a  title="Close (Esc)" className="btn-close" style={{ cursor:'pointer' }}>
+                <a
+                  title="Close (Esc)"
+                  className="btn-close"
+                  style={{ cursor: "pointer" }}
+                >
                   ×
                 </a>
-                <DropdownCart/>
-
+                <DropdownCart />
               </div>
-
             </div>
-
           </div>
-
         </div>
-  
       </div>
       {/* End .header-middle */}
       <div
         className="header-bottom sticky-header d-none d-lg-block"
         data-sticky-options="{'mobile': false}"
       >
-       <MenuHeader/>
+        <MenuHeader />
         {/* End .container */}
       </div>
       {/* End .header-bottom */}

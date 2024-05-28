@@ -9,6 +9,7 @@ import appUrl from "../api/appUrl";
 import ShowOrderStatus from "../utils/ShowOrderStatus";
 import { Button } from "primereact/button";
 import { toast } from "react-toastify";
+import ModalRate from "../components/ModalRate";
 
 function OrderDetail() {
   const getStatusText = (status,paymentType) => {
@@ -74,13 +75,16 @@ function OrderDetail() {
   const { code } = useParams();
   const handleException = useCustomException();
   const [order, setOrder] = useState(null);
+  const [couponU, setCouponU] = useState(null);
+
   useEffect(() => {
     const fecth = async () => {
       try {
         const response = await orderApi.getByCode(code);
         console.log(response);
         if (response.status === 200) {
-          setOrder(response.data);
+          setOrder(response.data.order);
+          setCouponU(response.data.couponUsage)
         }
       } catch (error) {
         if (error.response) {
@@ -123,6 +127,7 @@ function OrderDetail() {
         toast.error('Có lỗi xảy ra, vui lòng thử lại.');
     }
 };
+
   return (
     <div className="row m-5">
       <div className="col-md-5">
@@ -132,7 +137,7 @@ function OrderDetail() {
             <p>Mã đơn hàng: {order.code}</p>
             <p>Ngày đặt: {new Date(order.createdAt).toLocaleString()}</p>
             <p>Hình thức thanh toán: {order.paymentType==="OnlinePayment"? "Thanh toán online":"Thanh toán khi nhận hàng"}</p>
-            <p>Giá tiền: {order.total.toLocaleString()} VND</p>
+            <p>Giá tiền: <strong>{order.total.toLocaleString()} VND</strong></p>
             <div style={{ display:'flex', alignItems:'center' }}> <span className="mr-1">Trạng thái: </span><ShowOrderStatus data={getStatusText(order.status,order.paymentType)} id={order.id}/> </div>
           </>
         )}
@@ -154,15 +159,19 @@ function OrderDetail() {
              <Column style={{ width:"15%" }} header="Hình ảnh" body={(item)=>(
                 <><Image src={appUrl.imageURL+item.product.galleries[0].imagePath} width="100%"/></>
              )}></Column>
-             <Column  style={{ width:"35%" }}  header="Tên" body={(item)=>(<Link>{item.product.name}</Link>)}></Column>
+             <Column  style={{ width:"35%" }}  header="Tên" body={(item)=>(<Link to={'/san-pham/'+item.product.slug}>{item.product.name}</Link>)}></Column>
              <Column  style={{ width:"20%" }} header="Giá mua" body={(item)=>(<span>{item.price.toLocaleString()} VND</span>)}></Column>
              <Column  style={{ width:"10%" }} field="quantity" header="Số lượng"></Column>
-             <Column  style={{ width:"20%" }}  header="Tổng" body={(item)=>(<span>{item.totalPrice.toLocaleString()} VND</span>)}></Column>
+             <Column  style={{ width:"20%" }}  header="Đánh giá" body={(item)=>(<ModalRate item={item}/>)}>
+             
+             </Column>
             </DataTable>
         )}
       </div>
       <div className="col-md-4">
         <h4>Khác</h4>
+        <p><strong>Mã giảm giá: </strong>{couponU??"Không có"}</p>
+
         {order?.paidOrder&&order?.paidOrder.paymentDate!==null&&(
             <p>Đã thanh toán qua: <strong>{order?.paidOrder.paymentMethod}</strong> vào lúc {new Date(order?.paidOrder.paymentDate).toLocaleString()}</p>
         )}

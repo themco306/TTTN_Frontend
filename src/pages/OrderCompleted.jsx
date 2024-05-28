@@ -34,7 +34,7 @@ function OrderCompleted() {
             // if(!token&&response.data.status!==0){
             //     navigate("/")
             // }
-            setOrder(response.data)
+            setOrder(response.data.order)
           }
         } catch (error) {
           // navigate("/")

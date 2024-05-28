@@ -1,5 +1,9 @@
 import axiosInstance from "./axiosInstance"
 const productApi={
+    getSearch(params){
+        var url='products/search'
+        return axiosInstance.get(url,{params})
+    },
     getFilter(params){
         var url='products/filter'
         return axiosInstance.get(url,{params})

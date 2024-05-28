@@ -45,6 +45,10 @@ export const userApi = {
         var url='account/'+id
         return axiosInstance.get(url)
     },
+    getMe(){
+        var url='account/myEdit'
+        return axiosInstance.get(url)
+    },
     myUpdate(id, data) {
         var url = 'account/my/' + id;
         // Thiết lập tiêu đề 'Content-Type' là 'multipart/form-data' cho yêu cầu POST

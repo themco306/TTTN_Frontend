@@ -16,7 +16,7 @@ function App() {
     const fetchUserData = async () => {
       if (user!==null) {
         try {
-          const response = await userApi.get(user.id);
+          const response = await userApi.getMe();
           if (response.status === 200) {
             localStorage.setItem(
               "userCustomer",

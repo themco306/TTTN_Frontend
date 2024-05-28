@@ -30,6 +30,7 @@ import ProductDetail from './pages/ProductDetail';
 import PostDetail from './pages/PostDetail';
 import AllPost from './pages/AllPost';
 import Contact from './pages/Contact';
+import SearchResult from './pages/SearchResult';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -50,6 +51,12 @@ const router = createBrowserRouter([
         path: "san-pham/:slug",
         element: (
           <ProductDetail/>
+        ),
+      },
+      {
+        path: "ket-qua-tim-kiem",
+        element: (
+          <SearchResult/>
         ),
       },
       {
