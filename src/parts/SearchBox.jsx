@@ -52,7 +52,11 @@ function highlightQuery(text, query) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      handleSubmit();
+    }
+  };
   return (
     <div ref={searchBoxRef} className="header-icon header-search header-search-inline header-search-category w-lg-max text-right mt-0">
       <div className="header-search-wrapper">
@@ -65,6 +69,7 @@ function highlightQuery(text, query) {
           id="q"
           placeholder="Tìm kiếm..."
           required
+          onKeyDown={handleKeyDown}
         />
         {!loading ? (
           <button className="btn icon-magnifier p-0" title="Tìm" onClick={handleSubmit}/>

@@ -12,6 +12,10 @@ const productApi={
         var url='products/tag/'+id
         return axiosInstance.get(url)
     },
+    getMultiple(data){
+        var url='products/multiple'
+        return axiosInstance.post(url,data)
+    },
     getBySlug(slug){
         var url='products/slug/'+slug
         return axiosInstance.get(url)

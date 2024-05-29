@@ -31,6 +31,7 @@ import PostDetail from './pages/PostDetail';
 import AllPost from './pages/AllPost';
 import Contact from './pages/Contact';
 import SearchResult from './pages/SearchResult';
+import FavoriteList from './pages/FavoriteList';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -75,6 +76,12 @@ const router = createBrowserRouter([
         path: "lien-he",
         element: (
           <Contact/>
+        ),
+      },
+      {
+        path: "yeu-thich",
+        element: (
+          <FavoriteList/>
         ),
       },
       {

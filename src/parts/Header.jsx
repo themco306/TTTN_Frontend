@@ -10,13 +10,14 @@ import DropdownCart from "../components/DropdownCart";
 import { Helmet } from "react-helmet";
 import MenuHeader from "./MenuHeader";
 import SearchBox from "./SearchBox";
-
+import { Badge } from 'primereact/badge';
 function Header() {
   const { logoutContext } = useAuth();
   const [webInfo, setWebInfo] = useState({});
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.authReducer?.isLoggedIn);
   const { quantity } = useSelector((state) => state.cartReducers);
+  const favorites = useSelector(state => state.favoriteReducers.favorites);
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -176,9 +177,13 @@ function Header() {
               </Link>
             )}
 
-            <a href="wishlist.html" className="header-icon" title="wishlist">
-              <i className="icon-wishlist-2" />
-            </a>
+            <Link to={"/yeu-thich"} className="header-icon" title="wishlist">
+              <div style={{ position:"relative" }}>
+              <i className="icon-wishlist-2"  />
+              <Badge  value={favorites.length} severity="success"  style={{ position:"absolute",  top: "10%",
+  left: "80%" }}></Badge>
+  </div>
+            </Link>
             <div className="dropdown cart-dropdown">
               <a
                 href="#"

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import appUrl from "../../api/appUrl";
 import { userApi } from "../../api/userApi";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { cartActions } from "../../state/actions/cartActions";
 import useCustomException from "../../utils/useCustomException";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import { favoriteActions } from "../../state/actions/favoriteActions";
 
 function ItemProduct({ product }) {
   console.log("ip", product);
@@ -46,6 +47,17 @@ function ItemProduct({ product }) {
         handleException(error);
       }
     }
+  };
+  const favorites = useSelector(state => state.favoriteReducers.favorites);
+
+  const isFavorite = favorites.includes(product.id);
+
+  const handleFavorite = () => {
+      if (isFavorite) {
+          dispatch(favoriteActions.removeFromFavorite(product.id));
+      } else {
+          dispatch(favoriteActions.addToFavorite(product.id));
+      }
   };
   return (
     <div className="product-default " data-animation-name="fadeInRightShorter">
@@ -98,7 +110,7 @@ function ItemProduct({ product }) {
         </h3>
         <div className="ratings-container">
           <div className="product-ratings">
-            <span className="ratings" style={{ width: "80%" }} />
+            <span className="ratings" style={{ width: `${(product?.star / 5) * 100}%` }}/>
             <span className="tooltiptext tooltip-top" />
           </div>
         </div>
@@ -114,9 +126,10 @@ function ItemProduct({ product }) {
           <Button
             tooltip="yêu thích"
             severity="danger"
-            style={{ width: 35, height: 35 }}
-            icon={"pi pi-receipt"}
-          />
+            style={{ width: 35, height: 35 ,fontSize:15}}
+            text 
+            onClick={handleFavorite}
+          ><i style={{ fontSize:15 }} className={`pi pi-heart${isFavorite ? '-fill' : ''}`} ></i></Button>
           <a className="btn-icon btn-add-cart " onClick={handleAdd2Cart}>
             <i className="icon-shopping-cart" />
             <span>Thêm giỏ hàng</span>
@@ -126,8 +139,8 @@ function ItemProduct({ product }) {
             tooltip="xem nhanh"
             severity="success"
             style={{ width: 35, height: 35 }}
-            icon={"pi pi-receipt"}
-          />
+
+            text ><i style={{ fontSize:15 }} className="pi pi-receipt"></i></Button>
           <Dialog
             header="Xem nhanh"
             visible={visible}

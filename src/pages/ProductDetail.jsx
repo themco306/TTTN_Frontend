@@ -195,13 +195,13 @@ setRateData(updatedRateData);
             {/* End .product-single-gallery */}
             <div className="col-xl-5 product-single-details pt-3">
               <h1 className="product-title">{product.name}</h1>
-              {/* <div className="ratings-container">
+              <div className="ratings-container">
           <div className="product-ratings">
-            <span className="ratings" style={{width: '60%'}} />
+            <span className="ratings" style={{ width: `${(rateData.star / 5) * 100}%` }}/>
             <span className="tooltiptext tooltip-top" />
           </div>
-          <a href="#" className="rating-link">( 6 Reviews )</a>
-        </div> */}
+          <a href="#danhgia" className="rating-link">( {rateData.length} Đánh giá )</a>
+        </div>
               <hr className="short-divider" />
               <div className="price-box">
                 <span className="old-price">
@@ -263,7 +263,7 @@ setRateData(updatedRateData);
           </div>
         </div>
       </div>
-      <div className="container">
+      <div className="container" id="danhgia">
         <div className="product-single-tabs">
           <ul className="nav nav-tabs" role="tablist">
             <li className="nav-item">
