@@ -1,5 +1,6 @@
 import React from 'react'
 import { useAuth } from '../../auth/AuthContext'
+import { Link } from 'react-router-dom'
 
 function Dashboard({user}) {
   const {logoutContext}=useAuth()
@@ -48,7 +49,7 @@ function Dashboard({user}) {
             </div>
             <div className="col-6 col-md-4">
               <div className="feature-box text-center pb-4">
-                <a href="wishlist.html"><i className="sicon-heart" /></a>
+                <Link to="/yeu-thich"><i className="sicon-heart" /></Link>
                 <div className="feature-box-content">
                   <h3>Yêu thích</h3>
                 </div>

@@ -6,7 +6,7 @@ import { InputNumber } from "primereact/inputnumber";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Pagination, Thumbs } from "swiper/modules";
 import appUrl from "../api/appUrl";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import useCustomException from "../utils/useCustomException";
 import { userApi } from "../api/userApi";
 import { cartActions } from "../state/actions/cartActions";
@@ -16,6 +16,7 @@ import CommentContentBox from "../components/CommentContentBox";
 import { Button } from "primereact/button";
 import { Rating } from "primereact/rating";
 import LikeBox from "../components/LikeBox";
+import { favoriteActions } from "../state/actions/favoriteActions";
 
 function ProductDetail() {
   const { slug } = useParams();
@@ -131,6 +132,17 @@ const setLike=(like,dislike,rateId)=>{
 });
 setRateData(updatedRateData);
 }
+const favorites = useSelector(state => state.favoriteReducers.favorites);
+
+const isFavorite = favorites.includes(product.id);
+
+const handleFavorite = () => {
+    if (isFavorite) {
+        dispatch(favoriteActions.removeFromFavorite(product.id));
+    } else {
+        dispatch(favoriteActions.addToFavorite(product.id));
+    }
+};
   return (
     <div>
       <div className="container">
@@ -197,7 +209,7 @@ setRateData(updatedRateData);
               <h1 className="product-title">{product.name}</h1>
               <div className="ratings-container">
           <div className="product-ratings">
-            <span className="ratings" style={{ width: `${(rateData.star / 5) * 100}%` }}/>
+            <span className="ratings" style={{ width: `${(product.star / 5) * 100}%` }}/>
             <span className="tooltiptext tooltip-top" />
           </div>
           <a href="#danhgia" className="rating-link">( {rateData.length} Đánh giá )</a>
@@ -250,14 +262,14 @@ setRateData(updatedRateData);
               </div>
               <hr className="divider mb-0 mt-0" />
               <div className="product-single-share mb-1 mb-sm-4 mb-xl-0">
-                <a
-                  href="wishlist.html"
-                  className="btn-icon-wish add-wishlist"
-                  title="Add to Wishlist"
+                <Button
+                  text
+                  severity="danger"
+                  onClick={handleFavorite}
                 >
-                  <i className="icon-wishlist-2" />
+                  <i style={{ fontSize:15 }} className={`pi pi-heart${isFavorite ? '-fill' : ''} mr-1`} />
                   <span>Yêu thích</span>
-                </a>
+                </Button>
               </div>
             </div>
           </div>
@@ -342,7 +354,7 @@ setRateData(updatedRateData);
 
                 <div className="divider" />
                 <div className="comment-list">
-                  {rateData.length>0?rateData.map((item)=>(<div className="comments">
+                  {rateData.length>0?rateData.map((item)=>(<div key={item.id} className="comments mb-2">
                     <figure className="img-thumbnail">
                       <img
                         src={appUrl.avatarURL+item.user?.avatar}

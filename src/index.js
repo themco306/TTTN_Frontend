@@ -32,6 +32,7 @@ import AllPost from './pages/AllPost';
 import Contact from './pages/Contact';
 import SearchResult from './pages/SearchResult';
 import FavoriteList from './pages/FavoriteList';
+import SignalRComponent from './signal/SignalRComponent';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -165,9 +166,11 @@ root.render(
    
       <Provider store={store}>
       <AuthProvider>
+        <SignalRComponent>
         <RouterProvider router={router}>
       
         </RouterProvider>
+        </SignalRComponent>
         </AuthProvider>
       </Provider>
    

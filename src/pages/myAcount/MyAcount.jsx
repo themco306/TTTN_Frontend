@@ -4,6 +4,7 @@ import Order from './Order'
 import Address from './Address'
 import AccountDetail from './AccountDetail'
 import { useSelector } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 function MyAcount() {
     const {user}=useSelector(state=>state.authReducer)
@@ -26,7 +27,7 @@ function MyAcount() {
           <a className="nav-link" id="edit-tab" data-toggle="tab" href="#edit" role="tab" aria-controls="edit" aria-selected="false">Thông tin chi tiết</a>
         </li>
         <li className="nav-item">
-          <a className="nav-link" href="wishlist.html">Yêu thích</a>
+          <Link className="nav-link" to="/yeu-thich">Yêu thích</Link>
         </li>
       </ul>
     </div>
