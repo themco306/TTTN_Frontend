@@ -11,7 +11,11 @@ const menuApi={
     getSubMenu(id){
         var url='menus/sub/'+id
         return axiosInstance.get(url)
-    }
+    },
+    getByLink(link){
+        var url='menus/byLink/'+link
+        return axiosInstance.get(url)
+    },
 
 }
 export default menuApi
