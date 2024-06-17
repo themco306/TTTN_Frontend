@@ -21,6 +21,7 @@ const signalrReducers = (state = initialState, action) => {
             customerOnline:action.payload.customerOnline,
 
         }
+
     default:
       return state;
   }

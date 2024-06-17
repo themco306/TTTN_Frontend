@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import useCustomException from '../utils/useCustomException';
 import { userApi } from '../api/userApi';
 import { toast } from 'react-toastify';
+import { GoogleLogin } from '@react-oauth/google';
 
 function Login() {
   const { loginContext } = useAuth();
@@ -27,6 +28,28 @@ function Login() {
     try {
       setLLogin(true)
       const response = await userApi.login(userData);
+      console.log(response);
+      if (response.status == 200) {
+        setLLogin(false)
+          // navigate("/");
+          loginContext(response.data)
+        
+      }
+    } catch (error) {
+      setLLogin(false)
+      if(error.response){
+        handleException(error)
+      }
+    }
+  };
+  const handleLoginGoogle = async (dataAll) => {
+    try {
+      setLLogin(true)
+      const data={
+        credential:dataAll.credential,
+        clientId:dataAll.clientId,
+      }
+      const response = await userApi.loginGoogle(data);
       console.log(response);
       if (response.status == 200) {
         setLLogin(false)
@@ -100,6 +123,18 @@ const handleRegister =async(userData)=>{
               ĐĂNG NHẬP
             </button>
           </form>
+          <div style={{ width:"100%" }}>
+          <GoogleLogin
+
+  onSuccess={credentialResponse => {
+    handleLoginGoogle(credentialResponse)
+    console.log(credentialResponse);
+  }}
+  onError={() => {
+    console.log('Login Failed');
+  }}
+/>;
+</div>
         </div>
         <div className="col-md-6">
           <div className="heading mb-1">

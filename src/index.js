@@ -33,6 +33,7 @@ import Contact from './pages/Contact';
 import SearchResult from './pages/SearchResult';
 import FavoriteList from './pages/FavoriteList';
 import SignalRComponent from './signal/SignalRComponent';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 const root = ReactDOM.createRoot(document.getElementById("root"));
 const router = createBrowserRouter([
   {
@@ -166,11 +167,13 @@ root.render(
    
       <Provider store={store}>
       <AuthProvider>
+      <GoogleOAuthProvider clientId="198953346553-ir20gmnjd7v9h5pbk1gr964qqq8462r5.apps.googleusercontent.com">
         <SignalRComponent>
         <RouterProvider router={router}>
       
         </RouterProvider>
         </SignalRComponent>
+        </GoogleOAuthProvider>
         </AuthProvider>
       </Provider>
    

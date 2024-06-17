@@ -11,6 +11,7 @@ import appUrl from "../../api/appUrl";
 import { Image } from "primereact/image";
 import { PrimeIcons } from "primereact/api";
 import { Avatar } from "primereact/avatar";
+import linkAvatar from "../../utils/linkAvatar";
 function AccountDetail({ user }) {
   const dispatch = useDispatch();
   const handleException = useCustomException();
@@ -252,10 +253,11 @@ function AccountDetail({ user }) {
                   />
                 ) : (
                   <Image
-                    src={previewAvatar && appUrl.avatarURL + previewAvatar}
+                    src={previewAvatar && linkAvatar(previewAvatar)}
                     width={100}
                     preview
                   />
+                  
                 )}
               </div>
             </div>
@@ -274,6 +276,7 @@ function AccountDetail({ user }) {
           placeholder="editor@gmail.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled
         />
         <ShowValiMsg>{errors.email}</ShowValiMsg>
       </div>

@@ -7,6 +7,7 @@ import appUrl from "../api/appUrl";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Pagination } from "swiper/modules";
 import ItemPost from "../components/Posts/ItemPost";
+import FacebookComments from "../components/FacebookComments";
 
 function PostDetail() {
   const { slug } = useParams();
@@ -118,39 +119,14 @@ function PostDetail() {
                 {/* End .author.content */}
               </div>
               {/* End .post-author */}
-              {/* <div className="comment-respond">
-            <h3>Leave a Reply</h3>
-            <form action="#">
-              <p>Your email address will not be published. Required fields are marked *</p>
-              <div className="form-group">
-                <label>Comment</label>
-                <textarea cols={30} rows={1} className="form-control" required defaultValue={""} />
-              </div>
-              <div className="form-group">
-                <label>Name</label>
-                <input type="text" className="form-control" required />
-              </div>
-              <div className="form-group">
-                <label>Email</label>
-                <input type="email" className="form-control" required />
-              </div>
-              <div className="form-group">
-                <label>Website</label>
-                <input type="url" className="form-control" />
-              </div>
-              <div className="form-group-custom-control mb-2">
-                <div className="custom-control custom-checkbox">
-                  <input type="checkbox" className="custom-control-input" id="save-name" />
-                  <label className="custom-control-label" htmlFor="save-name">Save my name, email,
-                    and website in this browser for the next time I comment.</label>
-                </div>
-              </div>
-              <div className="form-footer my-0">
-                <button type="submit" className="btn btn-sm btn-primary">Post
-                  Comment</button>
-              </div>
-            </form>
-          </div> */}
+              <div className="comment-respond">
+            <h3>Bình luận</h3>
+            <FacebookComments
+        url="https://developers.facebook.com/docs/plugins/comments#configurator" 
+        numPosts={5} 
+        width="100%" 
+      />
+          </div>
             </div>
           </article>
           <hr className="mt-2 mb-1" />
@@ -267,6 +243,7 @@ function PostDetail() {
         </aside> */}
         {/* End .col-lg-3 */}
       </div>
+      
       {/* End .row */}
     </div>
   );

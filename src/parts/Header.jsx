@@ -62,7 +62,7 @@ function Header() {
   return (
     <header className="header">
       <Helmet>
-        <title>Trang chủ</title>
+        <title>{webInfo.shopName}</title>
         <link
           rel="icon"
           href={webInfo.icon !== undefined && appUrl.logoURL + webInfo?.icon}

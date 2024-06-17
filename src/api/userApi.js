@@ -5,6 +5,10 @@ export const userApi = {
         var url = 'account/signin'
         return axiosInstance.post(url, data)
     },
+    loginGoogle(data) {
+        var url = 'account/google-login'
+        return axiosInstance.post(url, data)
+    },
     register(data) {
         var url = 'account/signup'
         return axiosInstance.post(url, data)

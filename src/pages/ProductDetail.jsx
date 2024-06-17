@@ -17,6 +17,8 @@ import { Button } from "primereact/button";
 import { Rating } from "primereact/rating";
 import LikeBox from "../components/LikeBox";
 import { favoriteActions } from "../state/actions/favoriteActions";
+import ItemRate from "../components/ItemRate";
+import ReactPlayer from "react-player";
 
 function ProductDetail() {
   const { slug } = useParams();
@@ -30,6 +32,10 @@ function ProductDetail() {
   const [loading, setLoading] = useState(false);
   const [star,setStar]=useState(0)
   const [content,setContent]=useState('')
+  const [files, setFiles] = useState([]);
+  const [hoveredFile, setHoveredFile] = useState(null);
+  const [playing, setPlaying] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
   useEffect(() => {
     const fecth = async () => {
       try {
@@ -106,7 +112,9 @@ function ProductDetail() {
       }
       const response=await rateApi.add(data)
       if(response.status===200){
+        handleUploadFiles(response.data.data.id)
         toast.success(response.data.message)
+        setFiles([]);
         setStar(0)
         setContent('')
         setLoading(false)
@@ -142,6 +150,32 @@ const handleFavorite = () => {
     } else {
         dispatch(favoriteActions.addToFavorite(product.id));
     }
+};
+const handleFileChange = (e) => {
+  const newFiles = Array.from(e.target.files).slice(0, 5 - files.length); // Limit the number of files to 5
+  setFiles([...files, ...newFiles]);
+};
+
+const handleRemoveFile = (index) => {
+  const newFiles = files.filter((_, i) => i !== index);
+  setFiles(newFiles);
+};
+
+const handleUploadFiles = async (id) => {
+  try {
+      const formData = new FormData();
+      files.forEach(file => {
+          formData.append('files', file);
+      });
+      const response = await rateApi.addFiles(id,formData);
+  } catch (error) {
+      handleException(error);
+  }
+};
+const handleVideoClick = (filePath) => {
+  // window.open(filePath, '_blank');
+  setVideoUrl(filePath);
+        setPlaying(true);
 };
   return (
     <div>
@@ -327,7 +361,7 @@ const handleFavorite = () => {
                 <h3 className="reviews-title">
                   {rateData.length} cho sản phẩm {product.name}
                 </h3>
-                <div className="add-product-review">
+                {/* <div className="add-product-review">
                   <form onSubmit={handleOnSubmit} className="comment-form m-0">
                     <div className="rating-form mb-1">
                       <label htmlFor="rating">
@@ -348,42 +382,46 @@ const handleFavorite = () => {
                         onChange={(e)=>setContent(e.target.value)}
                       />
                     </div>
+                    <div className="col-12 m-2" style={{ display: 'flex',justifyItems:'start' }}>
+                    <label style={{ cursor:"pointer" }} htmlFor='files'>
+                        Chọn ảnh/video ({files.length}/5)
+                        </label>
+                        <input id='files' type="file" accept="image/*,video/*" multiple onChange={handleFileChange} disabled={files.length >= 5} style={{ visibility:"hidden" }}/>
+                       
+                        
+                    </div>
+                    <div className="col-12 m-2" style={{ display: 'flex', flexWrap: 'wrap' }}>
+                        {files.map((file, index) => (
+                            <div 
+                                key={index} 
+                                style={{ position: 'relative', margin: '0.5rem' }} 
+                               
+                            >
+                                {file.type.startsWith('image') ? (
+                                    <img src={URL.createObjectURL(file)} alt="preview" style={{ width: 100, height: 100, objectFit: 'cover' }} />
+                                ) : (
+                                    <Button type="button" text style={{ position: 'relative' }}  onMouseEnter={() => setHoveredFile(index)} 
+                                    onMouseLeave={() => setHoveredFile(null)}
+                                    onClick={() => file.type.startsWith('video') && handleVideoClick(URL.createObjectURL(file))}>
+                                        <ReactPlayer url={URL.createObjectURL(file)}  width={100} height={100} />
+                                        {hoveredFile === index && (
+                                            <Button  onClick={e=>e.preventDefault()} icon="pi pi-play" className="p-button-rounded p-button-success" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
+                                        )}
+                                    </Button>
+                                )}
+                                <Button icon="pi pi-times" type="button" className="p-button-rounded p-button-danger" style={{ position: 'absolute', top: 0, right: 0 ,zIndex:1000}} onClick={() => handleRemoveFile(index)} />
+                            </div>
+                        ))}
+                    </div>
                     <Button label="Gửi" loading={loading} />
                   </form>
-                </div>
+                </div> */}
 
                 <div className="divider" />
                 <div className="comment-list">
-                  {rateData.length>0?rateData.map((item)=>(<div key={item.id} className="comments mb-2">
-                    <figure className="img-thumbnail">
-                      <img
-                        src={appUrl.avatarURL+item.user?.avatar}
-                        alt="author"
-                        width={80}
-                        height={80}
-                      />
-                    </figure>
-                    <div className="comment-block">
-                      <div className="comment-header">
-                        <div className="comment-arrow" />
-                        <div className="ratings-container float-sm-right">
-                          <div className="product-ratings">
-                            <span
-                              className="ratings"
-                              style={{ width: `${(item.star / 5) * 100}%` }}
-                            />
-                            <span className="tooltiptext tooltip-top" />
-                          </div>
-                        </div>
-                        <span className="comment-by">
-                          <strong>{item.user?.firstName+" "+item.user?.lastName}</strong> – {new Date(item.createdAt).toLocaleString()}
-                         <LikeBox item={item} setLike={setLike}/>
-                        </span>
-                        
-                      </div>
-                       <CommentContentBox content={item.content}/>
-                    </div>
-                  </div>)):(<div>Chưa có đánh giá nào</div>)}
+                  {rateData.length>0?rateData.map((item)=>(
+                    <ItemRate item={item} setLike={setLike}/>
+                 )):(<div>Chưa có đánh giá nào</div>)}
                   
                 </div>
               </div>
@@ -413,6 +451,31 @@ const handleFavorite = () => {
         </div>
         <hr className="mt-0 m-b-5" />
       </div>
+      {playing && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.8)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex:1000
+          }}
+          onClick={() => setPlaying(false)}
+        >
+          <ReactPlayer
+            url={videoUrl}
+            playing={playing}
+            controls
+            width="80%"
+            height="80%"
+          />
+        </div>
+      )}
     </div>
   );
 }

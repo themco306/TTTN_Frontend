@@ -68,6 +68,10 @@ function SendEmail() {
             </span>
           )}{" "}
           để gửi liên kết về Email <span style={{ fontWeight:'bold' }}>{user?.email}</span>
+          
+        </p>
+        <p>
+          ?Hoặc <a href="/">trở về.</a>
         </p>
       </div>
     </div>

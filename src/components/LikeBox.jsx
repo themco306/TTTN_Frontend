@@ -44,11 +44,11 @@ function LikeBox({item,setLike}) {
   return (
     <div style={{ display:"inline-block",marginLeft:5,fontSize:18 }}>
     <div style={{ display:'flex',alignItems:'center',padding:5 }}>
-    <span style={{ marginRight:5 }}>
+    <span style={{ marginRight:5,userSelect:"none" }}>
     <i onClick={() => handleActionLike(item.id, true)} style={{ fontSize: 18, cursor: "pointer" }} className={`pi pi-thumbs-up${rateLike!==null && rateLike.isLike ? "-fill" : ""}`}></i>
 ({item.like})
     </span>
-    <span style={{ marginRight:5 }}>
+    <span style={{ marginRight:5,userSelect:"none" }}>
     <i  onClick={()=>handleActionLike(item.id,false)} style={{ fontSize:18 ,cursor:"pointer"}} className={`pi pi-thumbs-down${rateLike!=null && !rateLike.isLike ? "-fill" : ""}`}></i>({item.dislike})
     </span>
     </div>
