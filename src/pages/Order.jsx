@@ -50,6 +50,7 @@ const handlePaymentChange = (event) => {
         console.log(";;;;", response);
         if (response.status === 200) {
           setOrderInfoData(response.data);
+          
         }
       } catch (error) {
         console.log(error);
@@ -152,13 +153,13 @@ const handleRemoveFromCart = async () => {
         }))
       }
       const response =await orderApi.createOrder(data)
-      console.log(response)
+      console.log('ádasdáda')
       if(response.status===200){
+        
         handleSendOrderConfirmEmail(response.data.data.id)
         handleRemoveFromCart()
-        dispatch(cartActions.clearCart2Order)
         toast.success(response.data.message)
-        
+        // dispatch(cartActions.clearCart2Order())
         setLSOrDer(false)
         navigate(`/dat-hang-thanh-cong/${response.data.data.code}`)
       }

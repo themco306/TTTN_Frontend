@@ -12,9 +12,9 @@ const rateApi={
         var url='rates/report/'+id
         return axiosInstance.post(url)
     },
-    getByPId(id){
+    getByPId(id,params){
         var url='rates/'+id
-        return axiosInstance.get(url)
+        return axiosInstance.get(url,{params})
     },
     getRateLike(id){
         var url='rates/rateLike/'+id

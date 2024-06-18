@@ -19,6 +19,7 @@ import LikeBox from "../components/LikeBox";
 import { favoriteActions } from "../state/actions/favoriteActions";
 import ItemRate from "../components/ItemRate";
 import ReactPlayer from "react-player";
+import { Dropdown } from "primereact/dropdown";
 
 function ProductDetail() {
   const { slug } = useParams();
@@ -36,6 +37,30 @@ function ProductDetail() {
   const [hoveredFile, setHoveredFile] = useState(null);
   const [playing, setPlaying] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+
+  const [sort,setSort]=useState('date-desc')
+  const [starF,setStarF]=useState("null")
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rateL,setRateL]=useState(false)
+
+  const options = [
+
+    { name: "Mới nhất", value: "date-desc" },
+    { name: "Cũ nhất", value: "date-asc" },
+    // { name: "Thích nhiều", value: "like-desc" },
+
+  ];
+  const optionsStar = [
+    { name: "Tất cả", value: "null" },
+    { name: "5 sao", value: 5 },
+    { name: "4 sao", value: 4 },
+    { name: "3 sao", value: 3 },
+    { name: "2 sao", value: 2 },
+    { name: "1 sao", value: 1 },
+
+
+  ];
   useEffect(() => {
     const fecth = async () => {
       try {
@@ -61,19 +86,32 @@ function ProductDetail() {
   useEffect(() => {
     const fecth = async () => {
       try {
+        setRateL(true)
+        const params={
+          star:starF=="null"?null:starF,
+          sortOrder:sort,
+          pageNumber:currentPage
+        }
         if(product?.id!==undefined){
-          const response = await rateApi.getByPId(product.id);
+          const response = await rateApi.getByPId(product.id,params);
           console.log("rate",response)
           if (response.status === 200) {
-            setRateData(response.data);
+            if(currentPage>1){
+              setRateData(prevData => [...prevData, ...response.data.items]);
+            }else{
+              setRateData(response.data.items);
+            }
+           
+            setTotalRecords(response.data.totalCount)
+            setRateL(false)
           }
         }
       } catch (error) {
-
+        setRateL(false)
       }
     };
     fecth();
-  }, [product,loading]);
+  }, [product,loading,currentPage,sort,starF]);
   const handleAdd2Cart = async () => {
     try {
       const data = {
@@ -176,6 +214,24 @@ const handleVideoClick = (filePath) => {
   // window.open(filePath, '_blank');
   setVideoUrl(filePath);
         setPlaying(true);
+};
+const selectedTemplate = (option, props) => {
+  if (option) {
+      return (
+          <div className="flex align-items-center">
+              <div style={{ fontSize:20 }}>{option.name}</div>
+          </div>
+      );
+  }
+
+  return <span>{props.placeholder}</span>;
+};
+const itemsTemplate = (option) => {
+  return (
+      <div className="flex align-items-center">
+          <div style={{ fontSize:20 }}>{option.name}</div>
+      </div>
+  );
 };
   return (
     <div>
@@ -322,7 +378,7 @@ const handleVideoClick = (filePath) => {
                 aria-controls="product-desc-content"
                 aria-selected="false"
               >
-                Description
+                Mô tả ngắn
               </a>
             </li>
             <li className="nav-item">
@@ -335,7 +391,7 @@ const handleVideoClick = (filePath) => {
                 aria-controls="product-reviews-content"
                 aria-selected="true"
               >
-                Reviews ({rateData.length})
+                Đánh giá ({totalRecords})
               </a>
             </li>
           </ul>
@@ -358,9 +414,23 @@ const handleVideoClick = (filePath) => {
               aria-labelledby="product-tab-reviews"
             >
               <div className="product-reviews-content">
+                <div className="row">
+                <div className="col-8">
                 <h3 className="reviews-title">
-                  {rateData.length} cho sản phẩm {product.name}
+                  <strong>{totalRecords}</strong> đánh giá {starF!="null"?<strong>{starF} sao</strong>:""} cho sản phẩm 
                 </h3>
+                </div>
+                <div className="col-4 row" style={{ display:'flex',justifyContent:'end' }}>
+                  <div className="col-6">
+                  <Dropdown value={sort} onChange={(e) => { setSort(e.value);setCurrentPage(1)}} options={options} optionLabel="name" style={{ width:"100%" }} itemTemplate={itemsTemplate} valueTemplate={selectedTemplate} />
+                  </div>
+                  <div className="col-6">
+                  <Dropdown value={starF} onChange={(e) =>{ setStarF(e.value);setCurrentPage(1)}} options={optionsStar} optionLabel="name" style={{ width:"100%" }} itemTemplate={itemsTemplate} valueTemplate={selectedTemplate} />
+                  </div>
+               
+                </div>
+        
+                </div>
                 {/* <div className="add-product-review">
                   <form onSubmit={handleOnSubmit} className="comment-form m-0">
                     <div className="rating-form mb-1">
@@ -424,6 +494,12 @@ const handleVideoClick = (filePath) => {
                  )):(<div>Chưa có đánh giá nào</div>)}
                   
                 </div>
+                {(totalRecords > 5 && rateData.length < totalRecords) && (
+                  <div style={{ display:"flex",justifyContent:'center' }}>
+                  <Button onClick={()=>setCurrentPage(prevPage => prevPage + 1)} loading={rateL} disabled={totalRecords<=5||rateData.length==totalRecords} severity="danger" text raised>Tải thêm đánh giá</Button>
+                </div>
+                )}
+                
               </div>
               {/* End .product-reviews-content */}
             </div>

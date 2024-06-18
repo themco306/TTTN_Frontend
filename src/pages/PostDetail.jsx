@@ -119,14 +119,14 @@ function PostDetail() {
                 {/* End .author.content */}
               </div>
               {/* End .post-author */}
-              <div className="comment-respond">
+              {/* <div className="comment-respond">
             <h3>Bình luận</h3>
             <FacebookComments
         url="https://developers.facebook.com/docs/plugins/comments#configurator" 
         numPosts={5} 
         width="100%" 
       />
-          </div>
+          </div> */}
             </div>
           </article>
           <hr className="mt-2 mb-1" />

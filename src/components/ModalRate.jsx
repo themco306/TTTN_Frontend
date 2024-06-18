@@ -67,7 +67,10 @@ function ModalRate({ item }) {
             const response = await rateApi.add(data);
             console.log(response)
             if (response.status === 200) {
-                handleUploadFiles(response.data.data.id)
+                if(files.length>0){
+                    handleUploadFiles(response.data.data.id)
+
+                }
                 toast.success(response.data.message);
                 setStar(0);
                 setContent('');

@@ -2,7 +2,7 @@ import React from 'react'
 import { useAuth } from '../../auth/AuthContext'
 import { Link } from 'react-router-dom'
 
-function Dashboard({user}) {
+function Dashboard({user,handleTabChange}) {
   const {logoutContext}=useAuth()
   const handleLogout =()=>{
     logoutContext()
@@ -16,16 +16,16 @@ function Dashboard({user}) {
           </p>
           <p>
           Từ bảng điều khiển tài khoản của mình, bạn có thể xem
-            <a className="btn btn-link link-to-tab" href="#order">các đơn hàng gần đây</a>,
+            <a onClick={()=>handleTabChange("don-hang")} className="btn btn-link link-to-tab" href="#order">các đơn hàng gần đây</a>,
             quản lý
-            <a className="btn btn-link link-to-tab" href="#address">địa chỉ giao hàng</a>, và
-            <a className="btn btn-link link-to-tab" href="#edit">chỉnh sửa mật khẩu và chi tiết tài khoản của mình.</a>
+            <a onClick={()=>handleTabChange("dia-chi")} className="btn btn-link link-to-tab" href="#address">địa chỉ giao hàng</a>, và
+            <a onClick={()=>handleTabChange("thong-tin")} className="btn btn-link link-to-tab" href="#edit">chỉnh sửa mật khẩu và chi tiết tài khoản của mình.</a>
           </p>
           <div className="mb-4" />
           <div className="row row-lg">
             <div className="col-6 col-md-4">
               <div className="feature-box text-center pb-4">
-                <a href="#order" className="link-to-tab"><i className="sicon-social-dropbox" /></a>
+                <a onClick={()=>handleTabChange("don-hang")} href="#order" className="link-to-tab"><i className="sicon-social-dropbox" /></a>
                 <div className="feature-box-content">
                   <h3>Đơn hàng</h3>
                 </div>
@@ -33,7 +33,7 @@ function Dashboard({user}) {
             </div>
             <div className="col-6 col-md-4">
               <div className="feature-box text-center pb-4">
-                <a href="#address" className="link-to-tab"><i className="sicon-location-pin" /></a>
+                <a onClick={()=>handleTabChange("dia-chi")} href="#address" className="link-to-tab"><i className="sicon-location-pin" /></a>
                 <div className="feature-box-content">
                   <h3>Địa chỉ</h3>
                 </div>
@@ -41,7 +41,7 @@ function Dashboard({user}) {
             </div>
             <div className="col-6 col-md-4">
               <div className="feature-box text-center pb-4">
-                <a href="#edit" className="link-to-tab"><i className="icon-user-2" /></a>
+                <a onClick={()=>handleTabChange("thong-tin")} href="#edit" className="link-to-tab"><i className="icon-user-2" /></a>
                 <div className="feature-box-content p-0">
                   <h3>Chi tiết</h3>
                 </div>

@@ -4,9 +4,12 @@ import { orderApi } from '../api/orderApi';
 import { Button } from 'primereact/button';
 import { toast } from 'react-toastify';
 import useCustomException from '../utils/useCustomException';
+import { cartActions } from '../state/actions/cartActions';
+import { useDispatch } from 'react-redux';
 
 function OrderCompleted() {
     const { code, token } = useParams();
+    const dispatch=useDispatch()
     const navigate=useNavigate()
     const handleException=useCustomException()
     const [order,setOrder]=useState(null)
@@ -31,6 +34,8 @@ function OrderCompleted() {
           const response=await orderApi.getByCode(code)
           console.log('e',response)
           if(response.status===200){
+        dispatch(cartActions.clearCart2Order())
+
             // if(!token&&response.data.status!==0){
             //     navigate("/")
             // }
@@ -53,6 +58,7 @@ function OrderCompleted() {
               ...prevOrder,
               status: 1
             }));
+
             setLoading(false)
         }
       } catch (error) {
